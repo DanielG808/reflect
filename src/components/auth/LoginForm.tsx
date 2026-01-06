@@ -22,7 +22,7 @@ export default function LoginForm() {
   };
 
   return (
-    <Surface className="max-w-md mx-auto px-6 py-3">
+    <Surface title="Login:" className="max-w-md mx-auto px-6 py-3">
       <Form form={form} onSubmit={onSubmit} className="space-y-4">
         <Input
           label="Email"
