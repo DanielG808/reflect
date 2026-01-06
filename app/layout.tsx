@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Footer } from "@/components/layout/Footer";
+import { Footer } from "@/src/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Reflect",
