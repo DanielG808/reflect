@@ -1,15 +1,5 @@
+import { navLinks } from "@/src/lib/constants/navLinks";
 import NavLink from "./NavLink";
-
-const navLinks = [
-  {
-    path: "/entries",
-    label: "Entries",
-  },
-  {
-    path: "/new",
-    label: "New Entry",
-  },
-];
 
 export default function AppNav() {
   return (
