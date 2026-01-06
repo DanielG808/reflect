@@ -15,10 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col antialiased">
-        {/* This grows */}
         <main className="flex flex-1 flex-col">{children}</main>
-
-        {/* This sticks */}
         <Footer />
       </body>
     </html>
