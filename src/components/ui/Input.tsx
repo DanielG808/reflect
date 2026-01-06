@@ -36,7 +36,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             disabled:opacity-50
             `,
             hasError
-              ? "border-red-600 ring-2 ring-red-500/40"
+              ? "border-warn/50 ring-2 ring-warn/25"
               : "focus:border-accent focus:ring-2 focus:ring-accent/30",
             className,
           )}

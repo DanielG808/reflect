@@ -8,6 +8,10 @@
   --border: #cbbfae;
   --accent: #4a5f7a;
   --accent-dark: #2f3f52;
+
+  /* Muted warning red (dusty / paper-friendly) */
+  --warn: #b56a63;
+
   color-scheme: light;
 }
 
@@ -16,6 +20,8 @@
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
   --color-accent-dark: var(--accent-dark);
+  --color-warn: var(--warn);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -28,6 +34,8 @@
     --muted: #a49b8e;
     --border: #2f2a23;
     --accent: #7b91b0;
+
+    --warn: #c97c74;
 
     color-scheme: dark;
   }

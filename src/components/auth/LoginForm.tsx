@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import Form from "../forms/Form";
 import Surface from "../ui/Surface";
 import { Input } from "../ui/Input";
+import { Button } from "../ui/Button";
 
 export default function LoginForm() {
   const form = useForm<LoginValues>({
@@ -40,6 +41,8 @@ export default function LoginForm() {
           hasError={!!form.formState.errors.email}
           {...form.register("password")}
         />
+
+        <Button className="w-full mb-1">Submit</Button>
       </Form>
     </Surface>
   );
