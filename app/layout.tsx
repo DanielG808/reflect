@@ -4,7 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: "Reflect",
-  description: "Private journaling",
+  description: "Private journaling, thoughtfully designed",
 };
 
 export default function RootLayout({
