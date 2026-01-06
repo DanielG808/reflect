@@ -1,7 +1,7 @@
 export const navLinks = [
   {
     path: "/entries",
-    label: "Entries",
+    label: "Journal",
   },
   {
     path: "/new",
