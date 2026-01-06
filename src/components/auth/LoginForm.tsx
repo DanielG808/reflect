@@ -4,6 +4,7 @@ import { loginSchema, LoginValues } from "@/src/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Form from "../forms/Form";
+import Surface from "../ui/Surface";
 
 export default function LoginForm() {
   const form = useForm<LoginValues>({
@@ -20,12 +21,10 @@ export default function LoginForm() {
   };
 
   return (
-    <Form
-      form={form}
-      onSubmit={onSubmit}
-      className="border border-white/25 bg-white/15 space-y-4 w-60 h-96 rounded-md py-2 px-4"
-    >
-      LoginForm
-    </Form>
+    <Surface className="max-w-md mx-auto p-6">
+      <Form form={form} onSubmit={onSubmit} className="space-y-4">
+        LoginForm
+      </Form>
+    </Surface>
   );
 }
