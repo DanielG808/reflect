@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Form from "../forms/Form";
 import Surface from "../ui/Surface";
+import { Input } from "../ui/Input";
 
 export default function LoginForm() {
   const form = useForm<LoginValues>({
@@ -21,9 +22,24 @@ export default function LoginForm() {
   };
 
   return (
-    <Surface className="max-w-md mx-auto p-6">
+    <Surface className="max-w-md mx-auto px-6 py-3">
       <Form form={form} onSubmit={onSubmit} className="space-y-4">
-        LoginForm
+        <Input
+          label="Email"
+          type="email"
+          placeholder="Enter your email..."
+          autoComplete="email"
+          hasError={!!form.formState.errors.email}
+          {...form.register("email")}
+        />
+        <Input
+          label="Password"
+          type="password"
+          placeholder="Enter your password..."
+          autoComplete="password"
+          hasError={!!form.formState.errors.email}
+          {...form.register("password")}
+        />
       </Form>
     </Surface>
   );
