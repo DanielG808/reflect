@@ -5,5 +5,5 @@ type FormErrorProps = {
 };
 
 export default function FormError({ error }: FormErrorProps) {
-  return <p>{error && error.message}</p>;
+  return <p>• {error && error.message}</p>;
 }

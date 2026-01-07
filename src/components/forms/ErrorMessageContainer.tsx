@@ -1,6 +1,7 @@
 import { LoginValues } from "@/src/lib/validations/auth";
 import type { FieldErrors, FieldError } from "react-hook-form";
 import FormError from "./FormError";
+import H1 from "../ui/H1";
 
 type ErrorMessageContainerProps = {
   errors: FieldErrors<LoginValues>;
@@ -17,7 +18,8 @@ export default function ErrorMessageContainer({
   if (entries.length === 0) return null;
 
   return (
-    <section className="flex flex-col border border-warn bg-warn/50 text-warn rounded-md px-3 py-2">
+    <section className="flex flex-col border border-warn bg-warn/20 text-red-700/55 text-sm rounded-md px-3 py-2">
+      <H1 className="text-red-700/55 text-lg pb-1">Errors:</H1>
       <ul className="space-y-1">
         {entries.map(([field, error]) => (
           <li key={field}>
