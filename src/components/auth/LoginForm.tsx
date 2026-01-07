@@ -8,6 +8,8 @@ import Surface from "../ui/Surface";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
 import FormErrorContainer from "../forms/FormErrorContainer";
+import Link from "next/link";
+import AuthFormToggle from "./AuthFormToggle";
 
 export default function LoginForm() {
   const form = useForm<LoginValues>({
@@ -43,6 +45,8 @@ export default function LoginForm() {
           hasError={!!form.formState.errors.email}
           {...form.register("password")}
         />
+
+        <AuthFormToggle />
 
         <Button type="submit" className="w-full mb-1">
           Submit
