@@ -6,8 +6,10 @@ type NavLinkProps = {
 
 export default function NavLink({ link }: NavLinkProps) {
   return (
-    <Link href={link.path}>
-      <span className="hover:text-accent-dark">{link.label}</span>
-    </Link>
+    <li>
+      <Link href={link.path}>
+        <span className="hover:text-accent-dark">{link.label}</span>
+      </Link>
+    </li>
   );
 }

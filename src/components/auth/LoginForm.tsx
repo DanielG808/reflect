@@ -7,6 +7,7 @@ import Form from "../forms/Form";
 import Surface from "../ui/Surface";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
+import ErrorMessageContainer from "../forms/ErrorMessageContainer";
 
 export default function LoginForm() {
   const form = useForm<LoginValues>({
@@ -25,6 +26,7 @@ export default function LoginForm() {
   return (
     <Surface title="Login:" className="max-w-md mx-auto px-6 py-3">
       <Form form={form} onSubmit={onSubmit} className="space-y-4">
+        <ErrorMessageContainer errors={form.formState.errors} />
         <Input
           label="Email"
           type="email"
@@ -42,7 +44,9 @@ export default function LoginForm() {
           {...form.register("password")}
         />
 
-        <Button className="w-full mb-1">Submit</Button>
+        <Button type="submit" className="w-full mb-1">
+          Submit
+        </Button>
       </Form>
     </Surface>
   );
