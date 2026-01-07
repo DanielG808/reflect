@@ -10,7 +10,7 @@ type ErrorMessageContainerProps = {
   errors: FieldErrors<LoginValues>;
 };
 
-export default function ErrorMessageContainer({
+export default function FormErrorContainer({
   errors,
 }: ErrorMessageContainerProps) {
   const entries = Object.entries(errors).filter(
