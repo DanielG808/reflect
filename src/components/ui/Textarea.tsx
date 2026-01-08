@@ -34,7 +34,6 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           w-full
           bg-white/40
           border
-          border-accent/60
           px-3 py-2
           rounded-lg
           text-foreground
