@@ -1,6 +1,10 @@
-import { User } from "@supabase/supabase-js";
-import { AuthActionResult, AuthStatus } from "../lib/auth/types";
+"use client";
+
 import { create } from "zustand";
+import { toast } from "sonner";
+import type { User } from "@supabase/supabase-js";
+
+import type { AuthActionResult, AuthStatus } from "../lib/auth/types";
 import { login, logout, signup } from "../lib/auth/server";
 
 type AuthStore = {
@@ -29,10 +33,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
     if (!res.ok) {
       set({ status: "unauth", error: res.message });
+      toast.error(res.message ?? "Login failed.");
       return res;
     }
 
     set({ status: "unknown", error: null });
+    toast.success("Logged in");
     return res;
   },
 
@@ -43,10 +49,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
     if (!res.ok) {
       set({ status: "unauth", error: res.message });
+      toast.error(res.message ?? "Signup failed.");
       return res;
     }
 
     set({ status: "unknown", error: null });
+    toast.success("Account created");
     return res;
   },
 
@@ -57,10 +65,12 @@ export const useAuthStore = create<AuthStore>((set) => ({
 
     if (!res.ok) {
       set({ status: "authed", error: res.message });
+      toast.error(res.message ?? "Logout failed.");
       return res;
     }
 
     set({ user: null, status: "unauth", error: null });
+    toast.success("Logged out");
     return res;
   },
 }));

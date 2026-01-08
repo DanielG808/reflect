@@ -1,6 +1,67 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
+@source "../app/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../src/**/*.{js,ts,jsx,tsx,mdx}";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Tailwind v4 tokens you want to use in classnames */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted-bg);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--accent);
+    font-family: var(--font-sans, system-ui, sans-serif);
+  }
+}
+
+/* =========================
+   SINGLE SOURCE OF TRUTH
+   Put :root LAST so nothing overrides it.
+   ========================= */
 :root {
+  /* YOUR palette */
   --background: #e1d3bd;
   --surface: #ede2d1;
   --foreground: #2a2621;
@@ -8,41 +69,40 @@
   --border: #cbbfae;
   --accent: #4a5f7a;
   --accent-dark: #2f3f52;
-
-  /* Muted warning red (dusty / paper-friendly) */
   --warn: #b56a63;
 
   color-scheme: light;
+
+  /* shadcn tokens mapped to YOUR palette */
+  --radius: 0.625rem;
+
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+
+  --primary: var(--accent);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--surface);
+  --secondary-foreground: var(--foreground);
+
+  /* IMPORTANT:
+     shadcn uses "muted" as a background color token,
+     so we split it:
+  */
+  --muted-bg: var(--surface);
+  --muted-foreground: var(--muted);
+
+  --accent-foreground: #ffffff;
+
+  --destructive: var(--warn);
+  --destructive-foreground: #ffffff;
+
+  --input: var(--border);
+  --ring: var(--accent);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-accent: var(--accent);
-  --color-accent-dark: var(--accent-dark);
-  --color-warn: var(--warn);
-
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #15120f;
-    --surface: #1e1a16;
-    --foreground: #e6dfd4;
-    --muted: #a49b8e;
-    --border: #2f2a23;
-    --accent: #7b91b0;
-
-    --warn: #c97c74;
-
-    color-scheme: dark;
-  }
-} */
-
-body {
-  background: var(--background);
-  color: var(--accent);
-  font-family: var(--font-sans, system-ui, sans-serif);
-}
+/* Optional dark mode later:
+.dark { ... } */
