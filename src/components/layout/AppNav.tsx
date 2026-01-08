@@ -1,5 +1,6 @@
 import { navLinks } from "@/src/lib/constants/navLinks";
 import NavLink from "./NavLink";
+import LogoutButton from "../auth/LogoutButton";
 
 export default function AppNav() {
   return (
@@ -8,6 +9,7 @@ export default function AppNav() {
         {navLinks.map((link) => (
           <NavLink key={link.path} link={link} />
         ))}
+        <LogoutButton />
       </ul>
     </nav>
   );

@@ -19,10 +19,6 @@ import AuthFormToggle from "./AuthFormToggle";
 
 import { useAuthStore } from "@/src/stores/auth-store";
 
-/**
- * Single form type that supports both login + signup.
- * confirmPassword exists only for signup, so it's optional here.
- */
 type AuthFormValues = {
   email: string;
   password: string;
@@ -34,7 +30,6 @@ type AuthFormProps = {
   redirectTo?: string;
 };
 
-// Extend login schema so resolver matches the form type (confirmPassword optional)
 const loginSchemaWithOptionalConfirm = loginSchema.extend({
   confirmPassword: z.string().optional(),
 });
@@ -53,11 +48,6 @@ export default function AuthForm({
 
   const isLoading = status === "loading";
 
-  /**
-   * IMPORTANT:
-   * This is safe as long as your toggle navigates between routes (login <-> signup),
-   * which remounts the component. If you *don’t* remount, you’d key the component by mode.
-   */
   const resolver = zodResolver(
     isSignup ? signupSchema : loginSchemaWithOptionalConfirm
   );
