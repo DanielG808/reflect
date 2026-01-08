@@ -18,7 +18,7 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col antialiased">
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />
-        <Toaster closeButton />
+        <Toaster />
       </body>
     </html>
   );
