@@ -5,29 +5,39 @@ import {
   AuthFormMode,
   loginSchema,
   signupSchema,
-  type LoginValues,
-  type SignupValues,
 } from "@/src/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { z } from "zod";
 
 import Form from "../forms/Form";
 import Surface from "../ui/Surface";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
-import FormErrorContainer from "../forms/FormErrorContainer";
 import AuthFormToggle from "./AuthFormToggle";
 
-import { loginAction, signupAction } from "@/src/lib/auth/actions";
 import { useAuthStore } from "@/src/stores/auth-store";
 
-type AuthFormValues = LoginValues | SignupValues;
+/**
+ * Single form type that supports both login + signup.
+ * confirmPassword exists only for signup, so it's optional here.
+ */
+type AuthFormValues = {
+  email: string;
+  password: string;
+  confirmPassword?: string;
+};
 
 type AuthFormProps = {
   mode: AuthFormMode;
   redirectTo?: string;
 };
+
+// Extend login schema so resolver matches the form type (confirmPassword optional)
+const loginSchemaWithOptionalConfirm = loginSchema.extend({
+  confirmPassword: z.string().optional(),
+});
 
 export default function AuthForm({
   mode,
@@ -36,61 +46,56 @@ export default function AuthForm({
   const router = useRouter();
   const isSignup = mode === "signup";
 
-  const authLoading = useAuthStore((s) => s.authLoading);
-  const setAuthLoading = useAuthStore((s) => s.setAuthLoading);
-  const setAuthError = useAuthStore((s) => s.setAuthError);
-  const clearAuthError = useAuthStore((s) => s.clearAuthError);
-  const hydrateFromMe = useAuthStore((s) => s.hydrateFromMe);
+  const status = useAuthStore((s) => s.status);
+  const login = useAuthStore((s) => s.login);
+  const signup = useAuthStore((s) => s.signup);
+  const clearAuthError = useAuthStore((s) => s.clearError);
+
+  const isLoading = status === "loading";
+
+  /**
+   * IMPORTANT:
+   * This is safe as long as your toggle navigates between routes (login <-> signup),
+   * which remounts the component. If you *don’t* remount, you’d key the component by mode.
+   */
+  const resolver = zodResolver(
+    isSignup ? signupSchema : loginSchemaWithOptionalConfirm
+  );
 
   const form = useForm<AuthFormValues>({
-    resolver: zodResolver(isSignup ? signupSchema : loginSchema),
-    defaultValues: isSignup
-      ? { email: "", password: "", confirmPassword: "" }
-      : { email: "", password: "" },
+    resolver,
+    defaultValues: {
+      email: "",
+      password: "",
+      ...(isSignup ? { confirmPassword: "" } : {}),
+    },
     mode: "onSubmit",
   });
 
-  // If authError exists globally, also show it in RHF root (keeps your UI consistent)
-  React.useEffect(() => {
-    // don't overwrite field-level validation errors; only root
-    // (Zustand is just mirroring what's already displayed)
-  }, []);
-
-  const onSubmit: SubmitHandler<AuthFormValues> = async (values) => {
-    // clear prior errors
+  const onSubmit: SubmitHandler<AuthFormValues> = async ({
+    email,
+    password,
+  }) => {
     form.clearErrors("root");
     clearAuthError();
-    setAuthLoading(true);
 
-    try {
-      const { email, password } = values;
+    const res = isSignup
+      ? await signup(email, password)
+      : await login(email, password);
 
-      const result = isSignup
-        ? await signupAction(email, password)
-        : await loginAction(email, password);
-
-      if (!result.ok) {
-        setAuthError(result.message);
-        form.setError("root", { type: "server", message: result.message });
-        return;
-      }
-
-      // ✅ Success: reset the form so the user sees something happened immediately
-      form.reset(
-        isSignup
-          ? { email: "", password: "", confirmPassword: "" }
-          : { email: "", password: "" }
-      );
-
-      // ✅ Refresh Zustand user from cookie-backed server state
-      await hydrateFromMe();
-
-      // ✅ Deterministic navigation
-      router.replace(redirectTo);
-      router.refresh();
-    } finally {
-      setAuthLoading(false);
+    if (!res.ok) {
+      form.setError("root", { type: "server", message: res.message });
+      return;
     }
+
+    form.reset({
+      email: "",
+      password: "",
+      ...(isSignup ? { confirmPassword: "" } : {}),
+    });
+
+    router.replace(redirectTo);
+    router.refresh();
   };
 
   return (
@@ -99,8 +104,6 @@ export default function AuthForm({
       className="max-w-md mx-auto px-6 py-3"
     >
       <Form form={form} onSubmit={onSubmit} className="space-y-4">
-        {/* <FormErrorContainer errors={form.formState.errors as any} /> */}
-
         <Input
           label="Email"
           type="email"
@@ -125,15 +128,15 @@ export default function AuthForm({
             type="password"
             placeholder="Confirm your password..."
             autoComplete="new-password"
-            hasError={!!(form.formState.errors as any).confirmPassword}
-            {...form.register("confirmPassword" as const)}
+            hasError={!!form.formState.errors.confirmPassword}
+            {...form.register("confirmPassword")}
           />
         )}
 
         <AuthFormToggle mode={mode} />
 
-        <Button type="submit" className="w-full mb-1" disabled={authLoading}>
-          {authLoading ? "Submitting..." : "Submit"}
+        <Button type="submit" className="w-full mb-1" disabled={isLoading}>
+          {isLoading ? "Submitting..." : "Submit"}
         </Button>
       </Form>
     </Surface>

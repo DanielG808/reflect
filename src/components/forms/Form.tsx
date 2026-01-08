@@ -28,7 +28,7 @@ export default function Form<TFieldValues extends FieldValues>({
         className={className}
         noValidate
       >
-        <FormErrorContainer errors={form.formState.errors as any} />
+        <FormErrorContainer errors={form.formState.errors} />
         {children}
       </form>
     </FormProvider>

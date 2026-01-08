@@ -1,48 +1,66 @@
+import { User } from "@supabase/supabase-js";
+import { AuthActionResult, AuthStatus } from "../lib/auth/types";
 import { create } from "zustand";
+import { login, logout, signup } from "../lib/auth/server";
 
-type AuthState = {
-  user: { id: string; email: string | null } | null;
-  isHydrating: boolean;
-
-  authError: string | null;
-  authLoading: boolean;
-
-  setUser: (user: AuthState["user"]) => void;
-  clearAuthError: () => void;
-
-  setAuthLoading: (v: boolean) => void;
-  setAuthError: (msg: string | null) => void;
-
-  hydrateFromMe: () => Promise<void>;
+type AuthStore = {
+  user: User | null;
+  status: AuthStatus;
+  error: string | null;
+  setUser: (user: User | null) => void;
+  clearError: () => void;
+  login: (email: string, password: string) => Promise<AuthActionResult>;
+  signup: (email: string, password: string) => Promise<AuthActionResult>;
+  logout: () => Promise<AuthActionResult>;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   user: null,
-  isHydrating: true,
+  status: "unknown",
+  error: null,
 
-  authError: null,
-  authLoading: false,
+  setUser: (user) => set({ user, status: user ? "authed" : "unauth" }),
+  clearError: () => set({ error: null }),
 
-  setUser: (user) => set({ user }),
-  clearAuthError: () => set({ authError: null }),
+  login: async (email, password) => {
+    set({ status: "loading", error: null });
 
-  setAuthLoading: (v) => set({ authLoading: v }),
-  setAuthError: (msg) => set({ authError: msg }),
+    const res = await login(email, password);
 
-  hydrateFromMe: async () => {
-    set({ isHydrating: true });
-    try {
-      const res = await fetch("/api/me", { cache: "no-store" });
-      if (!res.ok) {
-        set({ user: null });
-        return;
-      }
-      const data = (await res.json()) as {
-        user: { id: string; email: string | null } | null;
-      };
-      set({ user: data.user });
-    } finally {
-      set({ isHydrating: false });
+    if (!res.ok) {
+      set({ status: "unauth", error: res.message });
+      return res;
     }
+
+    set({ status: "unknown", error: null });
+    return res;
+  },
+
+  signup: async (email, password) => {
+    set({ status: "loading", error: null });
+
+    const res = await signup(email, password);
+
+    if (!res.ok) {
+      set({ status: "unauth", error: res.message });
+      return res;
+    }
+
+    set({ status: "unknown", error: null });
+    return res;
+  },
+
+  logout: async () => {
+    set({ status: "loading", error: null });
+
+    const res = await logout();
+
+    if (!res.ok) {
+      set({ status: "authed", error: res.message });
+      return res;
+    }
+
+    set({ user: null, status: "unauth", error: null });
+    return res;
   },
 }));
