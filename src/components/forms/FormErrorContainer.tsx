@@ -13,14 +13,14 @@ type ErrorMessageContainerProps = {
 export default function FormErrorContainer({
   errors,
 }: ErrorMessageContainerProps) {
-  const entries = Object.entries(errors).filter(
+  const errorArray = Object.entries(errors).filter(
     ([key, value]) =>
       key !== "root" && value && "message" in value && value.message
   );
 
   return (
     <AnimatePresence initial={false}>
-      {entries.length > 0 && (
+      {errorArray.length > 0 && (
         <motion.section
           key="form-errors"
           initial={{ opacity: 0, y: -8, height: 0 }}
@@ -29,10 +29,10 @@ export default function FormErrorContainer({
           transition={{ duration: 0.18, ease: "easeOut" }}
           className="overflow-hidden"
         >
-          <div className="flex flex-col border border-warn bg-warn/20 text-red-700/55 text-sm rounded-md px-3 py-2">
+          <div className="flex flex-col border border-warn !bg-warn/20 text-red-700/55 text-sm rounded-md px-3 py-2">
             <H1 className="text-red-700/55 text-lg pb-1">Errors:</H1>
             <ul className="space-y-1">
-              {entries.map(([field, error]) => (
+              {errorArray.map(([field, error]) => (
                 <li key={field}>
                   <FormError error={error as FieldError} />
                 </li>

@@ -18,7 +18,16 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col antialiased">
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer />
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            style: {
+              background: "var(--surface)",
+              color: "var(--accent)",
+              border: "1px solid var(--border)",
+              borderRadius: "var(--radius)",
+            },
+          }}
+        />
       </body>
     </html>
   );

@@ -26,6 +26,7 @@
   --color-accent-dark: var(--accent-dark);
   --color-accent-foreground: var(--accent-foreground);
 
+  --color-warn: var(--warn);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
@@ -69,7 +70,7 @@
   --border: #cbbfae;
   --accent: #4a5f7a;
   --accent-dark: #2f3f52;
-  --warn: #b56a63;
+  --warn: 181 106 99; /* = #b56a63 */
 
   color-scheme: light;
 
