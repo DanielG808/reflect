@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import {
   AuthFormMode,
   loginSchema,
@@ -9,6 +10,7 @@ import {
 } from "@/src/lib/validations/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 import Form from "../forms/Form";
 import Surface from "../ui/Surface";
@@ -17,20 +19,30 @@ import { Button } from "../ui/Button";
 import FormErrorContainer from "../forms/FormErrorContainer";
 import AuthFormToggle from "./AuthFormToggle";
 
+import { loginAction, signupAction } from "@/src/lib/auth/actions";
+import { useAuthStore } from "@/src/stores/auth-store";
+
+type AuthFormValues = LoginValues | SignupValues;
+
 type AuthFormProps = {
   mode: AuthFormMode;
-  onLoginSubmit?: (values: LoginValues) => void | Promise<void>;
-  onSignupSubmit?: (values: SignupValues) => void | Promise<void>;
+  redirectTo?: string;
 };
 
 export default function AuthForm({
   mode,
-  onLoginSubmit,
-  onSignupSubmit,
+  redirectTo = "/entries",
 }: AuthFormProps) {
+  const router = useRouter();
   const isSignup = mode === "signup";
 
-  const form = useForm<LoginValues | SignupValues>({
+  const authLoading = useAuthStore((s) => s.authLoading);
+  const setAuthLoading = useAuthStore((s) => s.setAuthLoading);
+  const setAuthError = useAuthStore((s) => s.setAuthError);
+  const clearAuthError = useAuthStore((s) => s.clearAuthError);
+  const hydrateFromMe = useAuthStore((s) => s.hydrateFromMe);
+
+  const form = useForm<AuthFormValues>({
     resolver: zodResolver(isSignup ? signupSchema : loginSchema),
     defaultValues: isSignup
       ? { email: "", password: "", confirmPassword: "" }
@@ -38,17 +50,47 @@ export default function AuthForm({
     mode: "onSubmit",
   });
 
-  const onSubmit: SubmitHandler<LoginValues | SignupValues> = async (
-    values
-  ) => {
-    if (isSignup) {
-      await onSignupSubmit?.(values as SignupValues);
-      console.log("signup submitted", values);
-      return;
-    }
+  // If authError exists globally, also show it in RHF root (keeps your UI consistent)
+  React.useEffect(() => {
+    // don't overwrite field-level validation errors; only root
+    // (Zustand is just mirroring what's already displayed)
+  }, []);
 
-    await onLoginSubmit?.(values as LoginValues);
-    console.log("login submitted", values);
+  const onSubmit: SubmitHandler<AuthFormValues> = async (values) => {
+    // clear prior errors
+    form.clearErrors("root");
+    clearAuthError();
+    setAuthLoading(true);
+
+    try {
+      const { email, password } = values;
+
+      const result = isSignup
+        ? await signupAction(email, password)
+        : await loginAction(email, password);
+
+      if (!result.ok) {
+        setAuthError(result.message);
+        form.setError("root", { type: "server", message: result.message });
+        return;
+      }
+
+      // ✅ Success: reset the form so the user sees something happened immediately
+      form.reset(
+        isSignup
+          ? { email: "", password: "", confirmPassword: "" }
+          : { email: "", password: "" }
+      );
+
+      // ✅ Refresh Zustand user from cookie-backed server state
+      await hydrateFromMe();
+
+      // ✅ Deterministic navigation
+      router.replace(redirectTo);
+      router.refresh();
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   return (
@@ -57,7 +99,7 @@ export default function AuthForm({
       className="max-w-md mx-auto px-6 py-3"
     >
       <Form form={form} onSubmit={onSubmit} className="space-y-4">
-        <FormErrorContainer errors={form.formState.errors} />
+        {/* <FormErrorContainer errors={form.formState.errors as any} /> */}
 
         <Input
           label="Email"
@@ -90,8 +132,8 @@ export default function AuthForm({
 
         <AuthFormToggle mode={mode} />
 
-        <Button type="submit" className="w-full mb-1">
-          Submit
+        <Button type="submit" className="w-full mb-1" disabled={authLoading}>
+          {authLoading ? "Submitting..." : "Submit"}
         </Button>
       </Form>
     </Surface>

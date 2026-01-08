@@ -6,6 +6,7 @@ import {
   type SubmitHandler,
   type UseFormReturn,
 } from "react-hook-form";
+import FormErrorContainer from "./FormErrorContainer";
 
 type FormProps<TFieldValues extends FieldValues> = {
   form: UseFormReturn<TFieldValues>;
@@ -27,6 +28,7 @@ export default function Form<TFieldValues extends FieldValues>({
         className={className}
         noValidate
       >
+        <FormErrorContainer errors={form.formState.errors as any} />
         {children}
       </form>
     </FormProvider>

@@ -10,33 +10,32 @@ export async function getUser(): Promise<User | null> {
   return data.user ?? null;
 }
 
-export async function requireUser(): Promise<User | null> {
+export async function requireUser(): Promise<User> {
   const user = await getUser();
-  if (!user) redirect("login");
+  if (!user) redirect("/login");
   return user;
 }
 
 export async function login(
   email: string,
-  password: string,
+  password: string
 ): Promise<AuthActionResult> {
   const supabase = await createSupabaseServerClient();
-
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) return { ok: false, message: "Invalid email or password." };
-
   return { ok: true };
 }
 
-export async function loginAndRedirect(
+export async function signup(
   email: string,
-  password: string,
-  to: string = "/",
-): Promise<{ ok: false; message: string } | never> {
-  const result = await login(email, password);
-  if (!result.ok) return result;
-  redirect(to);
+  password: string
+): Promise<AuthActionResult> {
+  const supabase = await createSupabaseServerClient();
+  const { error } = await supabase.auth.signUp({ email, password });
+
+  if (error) return { ok: false, message: error.message };
+  return { ok: true };
 }
 
 export async function logout(to: string = "/login"): Promise<never> {

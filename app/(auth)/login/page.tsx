@@ -1,5 +1,5 @@
 import AuthForm from "@/src/components/auth/AuthForm";
 
 export default function LoginPage() {
-  return <AuthForm mode="login" />;
+  return <AuthForm mode="login" redirectTo="/entries" />;
 }
