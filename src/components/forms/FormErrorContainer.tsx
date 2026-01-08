@@ -29,7 +29,7 @@ export default function FormErrorContainer({
           transition={{ duration: 0.18, ease: "easeOut" }}
           className="overflow-hidden"
         >
-          <div className="flex flex-col border border-warn !bg-warn/20 text-red-700/55 text-sm rounded-md px-3 py-2">
+          <div className="flex flex-col border border-warn bg-warn/20 text-red-700/55 text-sm rounded-md px-3 py-2">
             <H1 className="text-red-700/55 text-lg pb-1">Errors:</H1>
             <ul className="space-y-1">
               {errorArray.map(([field, error]) => (

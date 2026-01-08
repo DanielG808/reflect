@@ -26,12 +26,7 @@
   --color-accent-dark: var(--accent-dark);
   --color-accent-foreground: var(--accent-foreground);
 
-  --color-warn: var(--warn);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  --color-warn: rgb(var(--warn));
 
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
@@ -70,7 +65,7 @@
   --border: #cbbfae;
   --accent: #4a5f7a;
   --accent-dark: #2f3f52;
-  --warn: 181 106 99; /* = #b56a63 */
+  --warn: 181 106 99;
 
   color-scheme: light;
 
