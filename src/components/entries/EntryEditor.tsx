@@ -1,10 +1,14 @@
 import { Textarea } from "../ui/Textarea";
+import AutoSaveStatus from "./AutoSaveStatus";
 import EditorControls from "./EditorControls";
 
 export default function EntryEditor() {
   return (
     <>
-      <EditorControls />
+      <div className="flex justify-between pb-2">
+        <AutoSaveStatus />
+        <EditorControls />
+      </div>
       <Textarea
         rows={16}
         defaultValue=""
