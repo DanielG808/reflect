@@ -1,4 +1,5 @@
 import FontSelector from "./FontSelector";
+import TextFormatSelector from "./TextFormatSelector";
 
 type EditorControlsProps = {
   font: string;
@@ -10,8 +11,9 @@ export default function EditorControls({
   onFontChange,
 }: EditorControlsProps) {
   return (
-    <nav>
+    <nav className="flex items-center space-x-2">
       <FontSelector value={font} onChange={onFontChange} />
+      <TextFormatSelector />
     </nav>
   );
 }
