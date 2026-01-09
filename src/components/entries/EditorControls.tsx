@@ -1,9 +1,17 @@
 import FontSelector from "./FontSelector";
 
-export default function EditorControls() {
+type EditorControlsProps = {
+  font: string;
+  onFontChange: (font: string) => void;
+};
+
+export default function EditorControls({
+  font,
+  onFontChange,
+}: EditorControlsProps) {
   return (
     <nav>
-      <FontSelector />
+      <FontSelector value={font} onChange={onFontChange} />
     </nav>
   );
 }
