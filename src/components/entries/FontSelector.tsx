@@ -7,7 +7,7 @@ const fonts = ["sans serif", "times new Roman", "Arial"];
 
 export default function FontSelector() {
   return (
-    <NativeSelect>
+    <NativeSelect className="bg-white/40">
       {fonts.map((font) => (
         <NativeSelectOption key={font} value={font}>
           {font}
