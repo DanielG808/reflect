@@ -2,21 +2,7 @@ import {
   NativeSelect,
   NativeSelectOption,
 } from "@/components/ui/native-select";
-
-const fonts = [
-  {
-    label: "Sans Serif",
-    value: "ui-sans-serif, system-ui, sans-serif",
-  },
-  {
-    label: "Times New Roman",
-    value: '"Times New Roman", Times, serif',
-  },
-  {
-    label: "Arial",
-    value: "Arial, Helvetica, sans-serif",
-  },
-];
+import { fonts } from "@/src/lib/constants/fonts";
 
 type FontSelectorProps = {
   value: string;
