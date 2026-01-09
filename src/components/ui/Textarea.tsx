@@ -29,6 +29,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           id={textareaId}
           rows={rows}
+          placeholder="What's on your mind right now?"
           className={cn(
             `
           w-full
