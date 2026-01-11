@@ -17,18 +17,27 @@ const variantClasses: Record<ButtonVariant, string> = {
     border border-white/20
     hover:bg-accent-dark hover:border-white/25
     focus-visible:ring-accent/30
+
+    data-[state=on]:bg-accent-dark
+    data-[state=on]:border-white/25
   `,
   ghost: `
     bg-transparent text-accent
     border border-accent/35
     hover:bg-white/15 hover:border-accent/50
     focus-visible:ring-accent/25
-  `,
+    data-[state=on]:bg-border-dark/60
+    data-[state=on]:border-accent/60
+`,
+
   warn: `
     bg-warn/90 text-background
     border border-white/20
     hover:bg-warn hover:border-white/25
     focus-visible:ring-warn/25
+
+    data-[state=on]:bg-warn
+    data-[state=on]:border-white/25
   `,
 };
 
@@ -41,7 +50,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     { className, variant = "accent", size = "md", type = "button", ...props },
-    ref,
+    ref
   ) => {
     return (
       <button
@@ -58,12 +67,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           `,
           sizeClasses[size],
           variantClasses[variant],
-          className,
+          className
         )}
         {...props}
       />
     );
-  },
+  }
 );
 
 Button.displayName = "Button";

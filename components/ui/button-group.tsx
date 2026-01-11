@@ -9,10 +9,17 @@ const buttonGroupVariants = cva(
   {
     variants: {
       orientation: {
-        horizontal:
-          "[&>*:not(:first-child)]:rounded-l-none [&>*:not(:first-child)]:border-l-0 [&>*:not(:last-child)]:rounded-r-none",
-        vertical:
-          "flex-col [&>*:not(:first-child)]:rounded-t-none [&>*:not(:first-child)]:border-t-0 [&>*:not(:last-child)]:rounded-b-none",
+        horizontal: `
+    [&>*:not(:first-child)]:rounded-l-none
+    [&>*:not(:last-child)]:rounded-r-none
+    [&>*:not(:first-child)]:-ml-px
+  `,
+        vertical: `
+    flex-col
+    [&>*:not(:first-child)]:rounded-t-none
+    [&>*:not(:last-child)]:rounded-b-none
+    [&>*:not(:first-child)]:-mt-px
+  `,
       },
     },
     defaultVariants: {
@@ -57,22 +64,8 @@ function ButtonGroupText({
   );
 }
 
-function ButtonGroupSeparator({
-  className,
-  orientation = "vertical",
-  ...props
-}: React.ComponentProps<typeof Separator>) {
-  return (
-    <Separator
-      data-slot="button-group-separator"
-      orientation={orientation}
-      className={cn(
-        "bg-input relative !m-0 self-stretch data-[orientation=vertical]:h-auto",
-        className
-      )}
-      {...props}
-    />
-  );
+function ButtonGroupSeparator() {
+  return null;
 }
 
 export {
