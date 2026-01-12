@@ -11,6 +11,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-border: var(--border);
+  --color-border-dark: var(--border-dark);
   --color-ring: var(--ring);
 
   --color-primary: var(--primary);
@@ -63,6 +64,7 @@
   --foreground: #2a2621;
   --muted: #6a6256;
   --border: #cbbfae;
+  --border-dark: #b3a896;
   --accent: #4a5f7a;
   --accent-dark: #2f3f52;
   --warn: 181 106 99;
@@ -97,6 +99,7 @@
   --destructive-foreground: #ffffff;
 
   --input: var(--border);
+  --input-dark: var(--border-dark);
   --ring: var(--accent);
 }
 

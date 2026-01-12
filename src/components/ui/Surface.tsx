@@ -3,6 +3,7 @@ import { cn } from "@/src/lib/utils/cn";
 type SurfaceProps = {
   children: React.ReactNode;
   className?: string;
+  containerClassName?: string;
   hover?: boolean;
   title?: string;
   titleClassName?: string;
@@ -11,17 +12,18 @@ type SurfaceProps = {
 export default function Surface({
   children,
   className,
+  containerClassName,
   hover = false,
   title,
   titleClassName,
 }: SurfaceProps) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={cn("flex flex-col gap-2", containerClassName)}>
       {title && (
         <h3
           className={cn(
             "text-lg font-medium text-accent/80 text-left",
-            titleClassName,
+            titleClassName
           )}
         >
           {title}
@@ -30,14 +32,10 @@ export default function Surface({
 
       <div
         className={cn(
-          `
-          bg-white/15 backdrop-blur-sm
-          border border-white/25
-          rounded-md
-          shadow-sm
-          ${hover && "hover:bg-white/25 hover:border-white/35 duration-200 cursor-pointer"}
-          `,
-          className,
+          "bg-white/15 backdrop-blur-sm border border-white/25 rounded-md shadow-sm",
+          hover &&
+            "hover:bg-white/25 hover:border-white/35 duration-200 cursor-pointer",
+          className
         )}
       >
         {children}
