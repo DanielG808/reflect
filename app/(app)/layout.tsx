@@ -1,5 +1,6 @@
 import AuthHydrator from "@/src/components/auth/AuthHydrator";
 import AppHeader from "@/src/components/layout/AppHeader";
+import { Footer } from "@/src/components/layout/Footer";
 import { requireUser } from "@/src/lib/auth/server";
 
 export default async function AppLayout({
@@ -13,9 +14,10 @@ export default async function AppLayout({
     <>
       <AuthHydrator user={user} />
 
-      <div className="flex flex-1 flex-col">
+      <div className="min-h-screen flex flex-col">
         <AppHeader />
         <main className="flex-1 px-6 py-4">{children}</main>
+        <Footer />
       </div>
     </>
   );
