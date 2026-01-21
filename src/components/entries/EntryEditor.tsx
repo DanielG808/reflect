@@ -25,8 +25,8 @@ export default function EntryEditor() {
   });
 
   return (
-    <>
-      <div className="flex justify-between pb-2">
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex justify-between pb-2 shrink-0">
         <AutoSaveStatus />
         <EditorControls
           editor={editor}
@@ -35,11 +35,16 @@ export default function EntryEditor() {
         />
       </div>
 
-      <div className="border rounded-md">
-        <EditorContent editor={editor} />
+      <div className="border rounded-md flex-1 min-h-0">
+        <EditorContent editor={editor} className="h-full" />
       </div>
 
       <style jsx global>{`
+        .tiptap {
+          height: 100%;
+          overflow-y: auto;
+        }
+
         .tiptap p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
           float: left;
@@ -48,6 +53,6 @@ export default function EntryEditor() {
           opacity: 0.6;
         }
       `}</style>
-    </>
+    </div>
   );
 }
