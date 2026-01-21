@@ -1,29 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
+import { EditorContent } from "@tiptap/react";
 
 import { useLocalStorage } from "@/src/hooks/useLocalStorage";
+import { useEntryEditor } from "@/src/hooks/useEntryEditor";
 import AutoSaveStatus from "./AutoSaveStatus";
 import EditorControls from "./EditorControls";
 
 const DEFAULT_FONT = "ui-sans-serif, system-ui, sans-serif";
-const PLACEHOLDER_TEXT = "What's on your mind?";
-
-function normalizeStoredHtml(html: string) {
-  const trimmed = (html ?? "").trim();
-  if (
-    trimmed === "" ||
-    trimmed === "<p></p>" ||
-    trimmed === "<p>&nbsp;</p>" ||
-    trimmed === "<p>\u00A0</p>"
-  ) {
-    return "";
-  }
-  return trimmed;
-}
 
 export default function EntryEditor() {
   const [fontFamily, setFontFamily] = useLocalStorage(
@@ -32,54 +16,13 @@ export default function EntryEditor() {
   );
 
   const [content, setContent] = useLocalStorage<string>("editor:content", "");
-  const normalizedContent = normalizeStoredHtml(content);
 
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        placeholder: PLACEHOLDER_TEXT,
-        emptyEditorClass: "is-editor-empty",
-      }),
-    ],
-    content: normalizedContent,
-    editorProps: {
-      attributes: {
-        class:
-          "tiptap bg-white/45 w-full p-4 rounded-md min-h-[24rem] outline-none",
-        style: `font-family:${fontFamily};`,
-      },
-    },
-    onUpdate({ editor }) {
-      setContent(editor.getHTML());
-    },
+  const { editor } = useEntryEditor({
+    content,
+    setContent,
+    fontFamily,
+    placeholder: "What's on your mind?",
   });
-
-  useEffect(() => {
-    if (!editor) return;
-
-    editor.setOptions({
-      editorProps: {
-        attributes: {
-          class:
-            "tiptap bg-white/45 w-full p-4 rounded-md min-h-[24rem] outline-none",
-          style: `font-family:${fontFamily};`,
-        },
-      },
-    });
-  }, [editor, fontFamily]);
-
-  useEffect(() => {
-    if (!editor) return;
-
-    if (!normalizedContent) {
-      const html = normalizeStoredHtml(editor.getHTML());
-      if (html !== "") {
-        editor.commands.setContent("", { emitUpdate: false });
-      }
-    }
-  }, [editor, normalizedContent]);
 
   return (
     <>
