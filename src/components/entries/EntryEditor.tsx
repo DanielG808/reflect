@@ -1,4 +1,3 @@
-// src/components/entries/EntryEditor.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -34,13 +33,11 @@ export default function EntryEditor() {
     },
   });
 
-  // Keep fontFamily in sync with the editor root element
   useEffect(() => {
     if (!editor) return;
     (editor.view.dom as HTMLElement).style.fontFamily = fontFamily;
   }, [editor, fontFamily]);
 
-  // Clear editor if content is cleared externally
   useEffect(() => {
     if (!editor) return;
 
@@ -63,7 +60,11 @@ export default function EntryEditor() {
         />
       </div>
 
-      <EditorContent editor={editor} className="border rounded-md" />
+      <EditorContent
+        editor={editor}
+        placeholder="What's on your mind?"
+        className="border rounded-md"
+      />
     </>
   );
 }
