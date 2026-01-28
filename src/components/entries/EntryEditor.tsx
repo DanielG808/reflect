@@ -1,9 +1,13 @@
 "use client";
 
+import * as React from "react";
 import { EditorContent } from "@tiptap/react";
 
 import { useLocalStorage } from "@/src/hooks/useLocalStorage";
 import { useEntryEditor } from "@/src/hooks/useEntryEditor";
+import { useDebounce } from "@/src/hooks/useDebounce";
+import { useEntryAutosaveStore } from "@/src/stores/entry-autosave-store";
+
 import AutoSaveStatus from "./AutoSaveStatus";
 import EditorControls from "./EditorControls";
 
@@ -23,6 +27,34 @@ export default function EntryEditor() {
     fontFamily,
     placeholder: "What's on your mind?",
   });
+
+  const autosave = useEntryAutosaveStore((s) => s.autosave);
+
+  // Debounced autosave (content/font are captured from latest render)
+  const debouncedAutosave = useDebounce(() => {
+    autosave({ content, fontFamily });
+  }, 800);
+
+  // Trigger autosave when the editor updates (user types, deletes, etc.)
+  React.useEffect(() => {
+    if (!editor) return;
+
+    const onUpdate = () => {
+      debouncedAutosave();
+    };
+
+    editor.on("update", onUpdate);
+
+    return () => {
+      editor.off("update", onUpdate);
+    };
+  }, [editor, debouncedAutosave]);
+
+  // OPTIONAL: autosave when font changes too (so formatting prefs persist)
+  React.useEffect(() => {
+    // If you don't want this, delete this effect.
+    debouncedAutosave();
+  }, [fontFamily, debouncedAutosave]);
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
