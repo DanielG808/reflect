@@ -14,7 +14,7 @@ export default function MainContainer({
   return (
     <section
       className={cn(
-        "mx-auto flex justify-center w-3/4 h-full min-h-0",
+        "mx-auto flex justify-center w-2/3 h-full min-h-0",
         className
       )}
     >
