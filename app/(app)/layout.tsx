@@ -14,12 +14,18 @@ export default async function AppLayout({
     <>
       <AuthHydrator user={user} />
 
-      <div className="min-h-screen flex flex-col">
-        <AppHeader />
+      <div className="h-dvh min-h-dvh flex flex-col overflow-hidden">
+        <div className="shrink-0">
+          <AppHeader />
+        </div>
 
-        <main className="flex-1 min-h-0 px-6 py-4">{children}</main>
+        <main className="flex-1 min-h-0 overflow-hidden px-6 py-4">
+          {children}
+        </main>
 
-        <Footer />
+        <div className="shrink-0">
+          <Footer />
+        </div>
       </div>
     </>
   );

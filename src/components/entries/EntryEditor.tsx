@@ -25,7 +25,7 @@ export default function EntryEditor() {
   });
 
   return (
-    <div className="flex flex-col flex-1 min-h-0">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       <div className="flex justify-between pb-2 shrink-0">
         <AutoSaveStatus />
         <EditorControls
@@ -35,7 +35,7 @@ export default function EntryEditor() {
         />
       </div>
 
-      <div className="border rounded-md flex-1 min-h-0">
+      <div className="border rounded-md flex-1 min-h-0 overflow-hidden">
         <EditorContent editor={editor} className="h-full" />
       </div>
 

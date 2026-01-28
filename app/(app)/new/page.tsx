@@ -4,11 +4,14 @@ import Surface from "@/src/components/ui/Surface";
 
 export default function NewEntryPage() {
   return (
-    <MainContainer className="h-full flex flex-col min-h-0">
+    <MainContainer
+      fullBleed
+      className="h-full flex flex-col min-h-0 overflow-hidden"
+    >
       <Surface
         title="New Entry:"
-        containerClassName="w-full flex flex-col flex-1 min-h-0"
-        className="w-full p-6 flex flex-col flex-1 min-h-0"
+        containerClassName="w-full flex flex-col flex-1 min-h-0 overflow-hidden"
+        className="w-full p-6 flex flex-col flex-1 min-h-0 overflow-hidden"
       >
         <EntryEditor />
       </Surface>
