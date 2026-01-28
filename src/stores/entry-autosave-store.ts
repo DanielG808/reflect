@@ -23,9 +23,7 @@ export const useEntryAutosaveStore = create<EntryAutosaveState>((set, get) => ({
   lastSavedAt: null,
   error: null,
   seq: 0,
-
   clearError: () => set({ error: null }),
-
   autosave: async (payload) => {
     const nextSeq = get().seq + 1;
 
