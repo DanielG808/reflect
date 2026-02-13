@@ -10,6 +10,8 @@ type EntryAutosaveState = {
   lastSavedAt: Date | null;
   error: string | null;
   seq: number;
+  hasTyped: boolean;
+  markTyped: () => void;
   clearError: () => void;
   autosave: (payload: AutosavePayload) => Promise<void>;
 };
@@ -23,8 +25,12 @@ export const useEntryAutosaveStore = create<EntryAutosaveState>((set, get) => ({
   lastSavedAt: null,
   error: null,
   seq: 0,
+  hasTyped: false,
+  markTyped: () => set({ hasTyped: true }),
   clearError: () => set({ error: null }),
   autosave: async (payload) => {
+    if (!get().hasTyped) return;
+
     const nextSeq = get().seq + 1;
 
     set({

@@ -29,17 +29,18 @@ export default function EntryEditor() {
   });
 
   const autosave = useEntryAutosaveStore((s) => s.autosave);
+  const markTyped = useEntryAutosaveStore((s) => s.markTyped);
+  const hasTyped = useEntryAutosaveStore((s) => s.hasTyped);
 
-  // Debounced autosave (content/font are captured from latest render)
   const debouncedAutosave = useDebounce(() => {
     autosave({ content, fontFamily });
   }, 800);
 
-  // Trigger autosave when the editor updates (user types, deletes, etc.)
   React.useEffect(() => {
     if (!editor) return;
 
     const onUpdate = () => {
+      if (!hasTyped) markTyped();
       debouncedAutosave();
     };
 
@@ -48,13 +49,12 @@ export default function EntryEditor() {
     return () => {
       editor.off("update", onUpdate);
     };
-  }, [editor, debouncedAutosave]);
+  }, [editor, debouncedAutosave, hasTyped, markTyped]);
 
-  // OPTIONAL: autosave when font changes too (so formatting prefs persist)
   React.useEffect(() => {
-    // If you don't want this, delete this effect.
+    if (!hasTyped) return;
     debouncedAutosave();
-  }, [fontFamily, debouncedAutosave]);
+  }, [fontFamily, debouncedAutosave, hasTyped]);
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">

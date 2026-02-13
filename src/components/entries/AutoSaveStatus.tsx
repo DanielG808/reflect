@@ -4,8 +4,6 @@ import * as React from "react";
 import { cn } from "@/src/lib/utils/cn";
 import { useEntryAutosaveStore } from "@/src/stores/entry-autosave-store";
 
-/* ---------- helpers ---------- */
-
 function minutesAgo(from: Date, to: Date) {
   const diffMs = to.getTime() - from.getTime();
   return Math.max(0, Math.floor(diffMs / 60_000));
@@ -13,13 +11,10 @@ function minutesAgo(from: Date, to: Date) {
 
 function formatSavedLabel(lastSavedAt: Date, now: Date) {
   const mins = minutesAgo(lastSavedAt, now);
-
   if (mins === 0) return "just now";
   if (mins === 1) return "1m";
   return `${mins}m`;
 }
-
-/* ---------- icons ---------- */
 
 function Spinner({ className }: { className?: string }) {
   return (
@@ -65,25 +60,27 @@ function CheckIcon({ className }: { className?: string }) {
   );
 }
 
-/* ---------- component ---------- */
-
 export default function AutoSaveStatus({ className }: { className?: string }) {
   const saving = useEntryAutosaveStore((s) => s.saving);
   const lastSavedAt = useEntryAutosaveStore((s) => s.lastSavedAt);
   const error = useEntryAutosaveStore((s) => s.error);
+  const hasTyped = useEntryAutosaveStore((s) => s.hasTyped);
 
-  // update timestamp label while idle
-  const [now, setNow] = React.useState(() => new Date());
+  const [now, setNow] = React.useState<Date | null>(null);
 
   React.useEffect(() => {
-    if (saving || !lastSavedAt) return;
+    if (!hasTyped || saving || !lastSavedAt) return;
+
+    setNow(new Date());
 
     const id = window.setInterval(() => {
       setNow(new Date());
-    }, 30_000); // update twice a minute
+    }, 30_000);
 
     return () => window.clearInterval(id);
-  }, [saving, lastSavedAt]);
+  }, [hasTyped, saving, lastSavedAt]);
+
+  const effectiveNow = now ?? lastSavedAt ?? new Date();
 
   return (
     <div
@@ -104,7 +101,7 @@ export default function AutoSaveStatus({ className }: { className?: string }) {
       ) : lastSavedAt ? (
         <>
           <CheckIcon />
-          <span>Saved · {formatSavedLabel(lastSavedAt, now)}</span>
+          <span>Saved · {formatSavedLabel(lastSavedAt, effectiveNow)}</span>
         </>
       ) : (
         <span className="opacity-60">Not saved</span>

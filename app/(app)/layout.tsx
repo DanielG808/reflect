@@ -1,5 +1,6 @@
 import AuthHydrator from "@/src/components/auth/AuthHydrator";
 import AppHeader from "@/src/components/layout/AppHeader";
+
 import { Footer } from "@/src/components/layout/Footer";
 import { requireUser } from "@/src/lib/auth/server";
 
