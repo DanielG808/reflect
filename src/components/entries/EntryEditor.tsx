@@ -10,6 +10,7 @@ import { useEntryAutosaveStore } from "@/src/stores/entry-autosave-store";
 
 import AutoSaveStatus from "./AutoSaveStatus";
 import EditorControls from "./EditorControls";
+import { Button } from "../ui/Button";
 
 const DEFAULT_FONT = "ui-sans-serif, system-ui, sans-serif";
 
@@ -70,6 +71,8 @@ export default function EntryEditor() {
       <div className="border rounded-md flex-1 min-h-0 overflow-hidden">
         <EditorContent editor={editor} className="h-full" />
       </div>
+
+      <Button className="mt-4">Create New Entry</Button>
 
       <style jsx global>{`
         .tiptap {

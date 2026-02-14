@@ -11,7 +11,7 @@ export default function NewEntryPage() {
       <Surface
         title="New Entry:"
         containerClassName="w-full flex flex-col flex-1 min-h-0 overflow-hidden"
-        className="w-full p-6 flex flex-col flex-1 min-h-0 overflow-hidden"
+        className="w-full px-6 py-4 flex flex-col flex-1 min-h-0 overflow-hidden"
       >
         <EntryEditor />
       </Surface>
