@@ -1,7 +1,7 @@
 "use server";
 
 import { requireUser } from "@/src/lib/auth/server";
-import type { EntryActionResult, EntryDTO } from "./types";
+import type { AutosavePayload, EntryActionResult, EntryDTO } from "./types";
 import { prisma } from "@/src/server/db/prisma";
 
 function toEntryDTO(entry: {
@@ -107,4 +107,14 @@ export async function deleteEntry(
   } catch {
     return { ok: false, message: "Failed to delete entry." };
   }
+}
+
+export async function autosaveDraft(
+  payload: AutosavePayload
+): Promise<EntryActionResult<{ entry: EntryDTO }>> {
+  if (payload.id) {
+    return updateEntry(payload.id, payload.content);
+  }
+
+  return createEntry(payload.content);
 }

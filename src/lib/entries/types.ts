@@ -14,3 +14,9 @@ export type EntryDTO = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type AutosavePayload = {
+  id?: string | null;
+  content: string;
+  fontFamily: string;
+};
