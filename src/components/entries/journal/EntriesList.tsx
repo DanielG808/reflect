@@ -6,8 +6,8 @@ export default async function EntriesList() {
 
   if (!res.ok) {
     return (
-      <ul className="flex flex-col items-center w-1/3 pt-10">
-        <li className="text-sm text-warn">
+      <ul className="flex flex-col items-stretch w-3/4 mx-auto pt-10">
+        <li className="text-sm text-warn text-center">
           {res.message ?? "Failed to load entries."}
         </li>
       </ul>
@@ -18,14 +18,16 @@ export default async function EntriesList() {
 
   if (entries.length === 0) {
     return (
-      <ul className="flex flex-col items-center w-1/3 pt-10">
-        <li className="text-sm text-muted">No saved entries yet.</li>
+      <ul className="flex flex-col items-stretch w-3/4 mx-auto pt-10">
+        <li className="text-sm text-muted text-center">
+          No saved entries yet.
+        </li>
       </ul>
     );
   }
 
   return (
-    <ul className="flex flex-col items-center w-1/3 pt-10">
+    <ul className="flex flex-col items-stretch w-3/4 space-y-4 mx-auto pt-10">
       {entries.map((entry) => (
         <EntryCard key={entry.id} entry={entry} />
       ))}
