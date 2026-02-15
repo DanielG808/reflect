@@ -204,6 +204,33 @@ export async function finalizeEntry(
   }
 }
 
+export async function deleteEntry(
+  id: string
+): Promise<EntryActionResult<{ id: string }>> {
+  const user = await requireUser();
+
+  if (!id) return { ok: false, message: "Missing entry id." };
+
+  try {
+    const existing = await prisma.entry.findFirst({
+      where: { id, userId: user.id },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return { ok: false, message: "Entry not found." };
+    }
+
+    await prisma.entry.delete({
+      where: { id },
+    });
+
+    return { ok: true, data: { id } };
+  } catch {
+    return { ok: false, message: "Failed to delete entry." };
+  }
+}
+
 export async function getSavedEntries(): Promise<
   EntryActionResult<{ entries: EntryDTO[] }>
 > {
