@@ -8,6 +8,7 @@ import {
   EntryAutosaveValues,
   entryAutosaveSchema,
   entryFinalizeSchema,
+  entryDTOSchema,
 } from "../lib/validations/entries";
 
 export type Payload = EntryAutosaveValues;
@@ -108,7 +109,13 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         return;
       }
 
-      const entry = res.data.entry;
+      const out = entryDTOSchema.safeParse(res.data.entry);
+      if (!out.success) {
+        set({ saving: false, error: "Invalid entry response." });
+        return;
+      }
+
+      const entry = out.data;
 
       set({
         saving: false,
@@ -174,7 +181,14 @@ export const useEntryStore = create<EntryState>((set, get) => ({
           return;
         }
 
-        const createdEntry = created.data.entry;
+        const createdOut = entryDTOSchema.safeParse(created.data.entry);
+        if (!createdOut.success) {
+          toast.error("Invalid entry response.", { id: FINALIZE_TOAST_ID });
+          set({ finalSaving: false });
+          return;
+        }
+
+        const createdEntry = createdOut.data;
         id = createdEntry.id;
 
         set({
@@ -197,7 +211,14 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         return;
       }
 
-      const entry = res.data.entry;
+      const out = entryDTOSchema.safeParse(res.data.entry);
+      if (!out.success) {
+        toast.error("Invalid entry response.", { id: FINALIZE_TOAST_ID });
+        set({ finalSaving: false });
+        return;
+      }
+
+      const entry = out.data;
 
       set({
         finalSaving: false,

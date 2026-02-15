@@ -6,6 +6,8 @@ import { prisma } from "@/src/server/db/prisma";
 import {
   entryAutosaveSchema,
   entryFinalizeSchema,
+  entryDTOSchema,
+  entryDTOListSchema,
 } from "../validations/entries";
 
 function toEntryDTO(entry: {
@@ -34,14 +36,15 @@ export async function createEntry(
   const user = await requireUser();
 
   const parsed = entryAutosaveSchema.safeParse({ content, fontFamily: "" });
-  if (!parsed.success)
+  if (!parsed.success) {
     return {
       ok: false,
       message: parsed.error.issues[0]?.message ?? "Invalid entry.",
     };
+  }
 
   try {
-    const entry = await prisma.entry.create({
+    const row = await prisma.entry.create({
       data: {
         userId: user.id,
         content: parsed.data.content,
@@ -57,7 +60,14 @@ export async function createEntry(
       },
     });
 
-    return { ok: true, data: { entry: toEntryDTO(entry) } };
+    const entry = toEntryDTO(row);
+
+    const out = entryDTOSchema.safeParse(entry);
+    if (!out.success) {
+      return { ok: false, message: "Invalid entry response." };
+    }
+
+    return { ok: true, data: { entry: out.data } };
   } catch {
     return { ok: false, message: "Failed to create entry." };
   }
@@ -72,11 +82,12 @@ export async function updateEntry(
   if (!id) return { ok: false, message: "Missing entry id." };
 
   const parsed = entryAutosaveSchema.safeParse({ content, fontFamily: "" });
-  if (!parsed.success)
+  if (!parsed.success) {
     return {
       ok: false,
       message: parsed.error.issues[0]?.message ?? "Invalid entry.",
     };
+  }
 
   try {
     const existing = await prisma.entry.findFirst({
@@ -88,7 +99,7 @@ export async function updateEntry(
       return { ok: false, message: "Entry not found." };
     }
 
-    const entry = await prisma.entry.update({
+    const row = await prisma.entry.update({
       where: { id },
       data: { content: parsed.data.content },
       select: {
@@ -102,7 +113,14 @@ export async function updateEntry(
       },
     });
 
-    return { ok: true, data: { entry: toEntryDTO(entry) } };
+    const entry = toEntryDTO(row);
+
+    const out = entryDTOSchema.safeParse(entry);
+    if (!out.success) {
+      return { ok: false, message: "Invalid entry response." };
+    }
+
+    return { ok: true, data: { entry: out.data } };
   } catch {
     return { ok: false, message: "Failed to update entry." };
   }
@@ -115,11 +133,12 @@ export async function autosaveDraft(
     content: payload.content,
     fontFamily: payload.fontFamily,
   });
-  if (!parsed.success)
+  if (!parsed.success) {
     return {
       ok: false,
       message: parsed.error.issues[0]?.message ?? "Invalid entry.",
     };
+  }
 
   if (payload.id) {
     return updateEntry(payload.id, parsed.data.content);
@@ -137,11 +156,12 @@ export async function finalizeEntry(
   if (!id) return { ok: false, message: "Missing entry id." };
 
   const parsed = entryFinalizeSchema.safeParse({ content, fontFamily: "" });
-  if (!parsed.success)
+  if (!parsed.success) {
     return {
       ok: false,
       message: parsed.error.issues[0]?.message ?? "Invalid entry.",
     };
+  }
 
   try {
     const existing = await prisma.entry.findFirst({
@@ -153,7 +173,7 @@ export async function finalizeEntry(
       return { ok: false, message: "Entry not found." };
     }
 
-    const entry = await prisma.entry.update({
+    const row = await prisma.entry.update({
       where: { id },
       data: {
         content: parsed.data.content,
@@ -171,7 +191,14 @@ export async function finalizeEntry(
       },
     });
 
-    return { ok: true, data: { entry: toEntryDTO(entry) } };
+    const entry = toEntryDTO(row);
+
+    const out = entryDTOSchema.safeParse(entry);
+    if (!out.success) {
+      return { ok: false, message: "Invalid entry response." };
+    }
+
+    return { ok: true, data: { entry: out.data } };
   } catch {
     return { ok: false, message: "Failed to finalize entry." };
   }
@@ -183,7 +210,7 @@ export async function getSavedEntries(): Promise<
   const user = await requireUser();
 
   try {
-    const entries = await prisma.entry.findMany({
+    const rows = await prisma.entry.findMany({
       where: { userId: user.id, status: "FINAL" },
       orderBy: { updatedAt: "desc" },
       select: {
@@ -197,7 +224,14 @@ export async function getSavedEntries(): Promise<
       },
     });
 
-    return { ok: true, data: { entries: entries.map(toEntryDTO) } };
+    const entries = rows.map(toEntryDTO);
+
+    const out = entryDTOListSchema.safeParse(entries);
+    if (!out.success) {
+      return { ok: false, message: "Invalid saved entries response." };
+    }
+
+    return { ok: true, data: { entries: out.data } };
   } catch {
     return { ok: false, message: "Failed to fetch saved entries." };
   }
@@ -209,7 +243,7 @@ export async function getDraftEntries(): Promise<
   const user = await requireUser();
 
   try {
-    const entries = await prisma.entry.findMany({
+    const rows = await prisma.entry.findMany({
       where: { userId: user.id, status: "DRAFT" },
       orderBy: { updatedAt: "desc" },
       select: {
@@ -223,7 +257,14 @@ export async function getDraftEntries(): Promise<
       },
     });
 
-    return { ok: true, data: { entries: entries.map(toEntryDTO) } };
+    const entries = rows.map(toEntryDTO);
+
+    const out = entryDTOListSchema.safeParse(entries);
+    if (!out.success) {
+      return { ok: false, message: "Invalid draft entries response." };
+    }
+
+    return { ok: true, data: { entries: out.data } };
   } catch {
     return { ok: false, message: "Failed to fetch draft entries." };
   }
