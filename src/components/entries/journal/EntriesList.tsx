@@ -22,9 +22,12 @@ export default async function EntriesList() {
 
   if (entries.length === 0) {
     return (
-      <ul className="flex flex-col items-stretch w-4/5 mx-auto pt-10">
-        <li className="text-sm text-muted text-center">
-          No saved entries yet.
+      <ul className="flex flex-col justify-center items-center w-4/5 mx-auto min-h-[calc(100vh-80px)]">
+        <li className="text-sm text-center">
+          No saved entries yet. Start journaling{" "}
+          <a href="/new" className="underline hover:text-accent-dark">
+            here...
+          </a>
         </li>
       </ul>
     );
