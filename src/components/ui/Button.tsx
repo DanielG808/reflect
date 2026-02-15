@@ -31,7 +31,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 `,
 
   warn: `
-    bg-warn/90 text-background
+    bg-warn/80 text-background
     border border-white/20
     hover:bg-warn hover:border-white/25
     focus-visible:ring-warn/25
