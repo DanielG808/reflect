@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { toast } from "sonner";
 
 import { EntryDTO } from "../lib/entries/types";
 import { autosaveDraft, finalizeEntry } from "../lib/entries/server";
@@ -17,8 +18,6 @@ type EntryState = {
   error: string | null;
 
   finalSaving: boolean;
-  finalError: string | null;
-  finalSavedAt: Date | null;
 
   seq: number;
   hasTyped: boolean;
@@ -27,7 +26,6 @@ type EntryState = {
 
   markTyped: () => void;
   clearError: () => void;
-  clearFinalError: () => void;
   setEntryId: (id: string | null) => void;
 
   newEntry: () => void;
@@ -36,14 +34,14 @@ type EntryState = {
   finalize: (content: string, fontFamily?: string) => Promise<void>;
 };
 
+const FINALIZE_TOAST_ID = "entry-finalize";
+
 export const useEntryStore = create<EntryState>((set, get) => ({
   saving: false,
   lastSavedAt: null,
   error: null,
 
   finalSaving: false,
-  finalError: null,
-  finalSavedAt: null,
 
   seq: 0,
   hasTyped: false,
@@ -52,11 +50,12 @@ export const useEntryStore = create<EntryState>((set, get) => ({
 
   markTyped: () => set({ hasTyped: true }),
   clearError: () => set({ error: null }),
-  clearFinalError: () => set({ finalError: null }),
   setEntryId: (id) => set({ entryId: id }),
 
   newEntry: () => {
     const nextSeq = get().seq + 1;
+
+    toast.dismiss(FINALIZE_TOAST_ID);
 
     set({
       saving: false,
@@ -64,8 +63,6 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       error: null,
 
       finalSaving: false,
-      finalError: null,
-      finalSavedAt: null,
 
       seq: nextSeq,
       hasTyped: false,
@@ -132,17 +129,14 @@ export const useEntryStore = create<EntryState>((set, get) => ({
 
   finalize: async (content, fontFamily = "") => {
     const current = get().entry;
-    if (current?.status === "FINAL") {
-      set({ finalError: null });
-      return;
-    }
+    if (current?.status === "FINAL") return;
 
     const parsed = entryFinalizeSchema.safeParse({ content, fontFamily });
     if (!parsed.success) {
-      set({
-        finalSaving: false,
-        finalError: parsed.error.issues[0]?.message ?? "Invalid entry.",
+      toast.error(parsed.error.issues[0]?.message ?? "Invalid entry.", {
+        id: FINALIZE_TOAST_ID,
       });
+      set({ finalSaving: false });
       return;
     }
 
@@ -150,9 +144,10 @@ export const useEntryStore = create<EntryState>((set, get) => ({
 
     set({
       finalSaving: true,
-      finalError: null,
       seq: nextSeq,
     });
+
+    toast.loading("Finalizing entry…", { id: FINALIZE_TOAST_ID });
 
     try {
       await sleep(1.5);
@@ -169,12 +164,13 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         if (get().seq !== nextSeq) return;
 
         if (!created.ok || !created.data) {
-          set({
-            finalSaving: false,
-            finalError: created.ok
-              ? "Failed to create entry."
-              : created.message,
-          });
+          toast.error(
+            created.ok ? "Failed to create entry." : created.message,
+            {
+              id: FINALIZE_TOAST_ID,
+            }
+          );
+          set({ finalSaving: false });
           return;
         }
 
@@ -194,10 +190,10 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       if (get().seq !== nextSeq) return;
 
       if (!res.ok || !res.data) {
-        set({
-          finalSaving: false,
-          finalError: res.ok ? "Failed to finalize entry." : res.message,
+        toast.error(res.ok ? "Failed to finalize entry." : res.message, {
+          id: FINALIZE_TOAST_ID,
         });
+        set({ finalSaving: false });
         return;
       }
 
@@ -205,8 +201,6 @@ export const useEntryStore = create<EntryState>((set, get) => ({
 
       set({
         finalSaving: false,
-        finalSavedAt: new Date(entry.updatedAt),
-        finalError: null,
         saving: false,
         lastSavedAt: new Date(entry.updatedAt),
         error: null,
@@ -214,14 +208,19 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         entry,
         hasTyped: true,
       });
+
+      toast.success("Entry finalized.", { id: FINALIZE_TOAST_ID });
     } catch (e) {
       if (get().seq !== nextSeq) return;
 
-      set({
-        finalSaving: false,
-        finalError:
-          e instanceof Error ? e.message : "Failed to finalize entry.",
-      });
+      toast.error(
+        e instanceof Error ? e.message : "Failed to finalize entry.",
+        {
+          id: FINALIZE_TOAST_ID,
+        }
+      );
+
+      set({ finalSaving: false });
     }
   },
 }));
