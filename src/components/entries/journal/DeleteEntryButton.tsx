@@ -17,9 +17,13 @@ import { useEntryStore } from "@/src/stores/entry-store";
 
 type DeleteEntryButtonProps = {
   entryId: string;
+  buttonClassName: string;
 };
 
-export default function DeleteEntryButton({ entryId }: DeleteEntryButtonProps) {
+export default function DeleteEntryButton({
+  entryId,
+  buttonClassName,
+}: DeleteEntryButtonProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
@@ -37,7 +41,7 @@ export default function DeleteEntryButton({ entryId }: DeleteEntryButtonProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild className={buttonClassName}>
         <TrashIcon className="h-4 w-4 text-red-400/75 opacity-0 group-hover:opacity-100 hover:text-red-500/75 duration-200 cursor-pointer" />
       </DialogTrigger>
 

@@ -57,7 +57,7 @@ export default function EntryViewer({ entry }: EntryViewerProps) {
             style={{ fontFamily }}
             dangerouslySetInnerHTML={{ __html: entry.content }}
           />
-          <EntryActions />
+          <EntryActions entryId={entry.id} />
         </Surface>
       </motion.div>
     </motion.div>
