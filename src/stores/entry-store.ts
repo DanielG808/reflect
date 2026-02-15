@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 import { EntryDTO } from "../lib/entries/types";
 import { autosaveDraft, finalizeEntry } from "../lib/entries/server";
+import { sleep } from "../lib/utils/sleep";
 
 export type Payload = {
   content: string;
@@ -134,6 +135,8 @@ export const useEntryStore = create<EntryState>((set, get) => ({
     });
 
     try {
+      await sleep(1.5);
+
       let id = get().entryId;
 
       if (!id) {
