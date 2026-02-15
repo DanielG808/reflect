@@ -5,6 +5,7 @@ import { useLocalStorage } from "@/src/hooks/useLocalStorage";
 import Surface from "@/src/components/ui/Surface";
 import { SquarePenIcon, TrashIcon } from "lucide-react";
 import { EntryDTO } from "@/src/lib/entries/types";
+import EntryActions from "./EntryActions";
 
 type EntryViewerProps = {
   entry: EntryDTO;
@@ -56,10 +57,7 @@ export default function EntryViewer({ entry }: EntryViewerProps) {
             style={{ fontFamily }}
             dangerouslySetInnerHTML={{ __html: entry.content }}
           />
-          <div className="flex p-4 space-x-4 opacity-0 group-hover:opacity-100 duration-200">
-            <SquarePenIcon className="h-5 w-5 hover:text-accent-dark cursor-pointer" />
-            <TrashIcon className="h-5 w-5 text-red-400/75 hover:text-red-500/75 cursor-pointer" />
-          </div>
+          <EntryActions />
         </Surface>
       </motion.div>
     </motion.div>
