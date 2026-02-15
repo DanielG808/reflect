@@ -3,32 +3,13 @@
 import { requireUser } from "@/src/lib/auth/server";
 import type { AutosavePayload, EntryActionResult, EntryDTO } from "./types";
 import { prisma } from "@/src/server/db/prisma";
+import { toEntryDTO } from "./dto";
 import {
   entryAutosaveSchema,
   entryFinalizeSchema,
   entryDTOSchema,
   entryDTOListSchema,
 } from "../validations/entries";
-
-function toEntryDTO(entry: {
-  id: string;
-  userId: string;
-  content: string;
-  status: "DRAFT" | "FINAL";
-  version: number;
-  createdAt: Date;
-  updatedAt: Date;
-}): EntryDTO {
-  return {
-    id: entry.id,
-    userId: entry.userId,
-    content: entry.content,
-    status: entry.status,
-    version: entry.version,
-    createdAt: entry.createdAt.toISOString(),
-    updatedAt: entry.updatedAt.toISOString(),
-  };
-}
 
 export async function createEntry(
   content: string = ""
@@ -133,6 +114,7 @@ export async function autosaveDraft(
     content: payload.content,
     fontFamily: payload.fontFamily,
   });
+
   if (!parsed.success) {
     return {
       ok: false,
