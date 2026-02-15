@@ -3,6 +3,10 @@
 import { requireUser } from "@/src/lib/auth/server";
 import type { AutosavePayload, EntryActionResult, EntryDTO } from "./types";
 import { prisma } from "@/src/server/db/prisma";
+import {
+  entryAutosaveSchema,
+  entryFinalizeSchema,
+} from "../validations/entries";
 
 function toEntryDTO(entry: {
   id: string;
@@ -29,11 +33,18 @@ export async function createEntry(
 ): Promise<EntryActionResult<{ entry: EntryDTO }>> {
   const user = await requireUser();
 
+  const parsed = entryAutosaveSchema.safeParse({ content, fontFamily: "" });
+  if (!parsed.success)
+    return {
+      ok: false,
+      message: parsed.error.issues[0]?.message ?? "Invalid entry.",
+    };
+
   try {
     const entry = await prisma.entry.create({
       data: {
         userId: user.id,
-        content,
+        content: parsed.data.content,
       },
       select: {
         id: true,
@@ -60,6 +71,13 @@ export async function updateEntry(
 
   if (!id) return { ok: false, message: "Missing entry id." };
 
+  const parsed = entryAutosaveSchema.safeParse({ content, fontFamily: "" });
+  if (!parsed.success)
+    return {
+      ok: false,
+      message: parsed.error.issues[0]?.message ?? "Invalid entry.",
+    };
+
   try {
     const existing = await prisma.entry.findFirst({
       where: { id, userId: user.id },
@@ -72,7 +90,7 @@ export async function updateEntry(
 
     const entry = await prisma.entry.update({
       where: { id },
-      data: { content },
+      data: { content: parsed.data.content },
       select: {
         id: true,
         userId: true,
@@ -93,11 +111,21 @@ export async function updateEntry(
 export async function autosaveDraft(
   payload: AutosavePayload
 ): Promise<EntryActionResult<{ entry: EntryDTO }>> {
+  const parsed = entryAutosaveSchema.safeParse({
+    content: payload.content,
+    fontFamily: payload.fontFamily,
+  });
+  if (!parsed.success)
+    return {
+      ok: false,
+      message: parsed.error.issues[0]?.message ?? "Invalid entry.",
+    };
+
   if (payload.id) {
-    return updateEntry(payload.id, payload.content);
+    return updateEntry(payload.id, parsed.data.content);
   }
 
-  return createEntry(payload.content);
+  return createEntry(parsed.data.content);
 }
 
 export async function finalizeEntry(
@@ -107,6 +135,13 @@ export async function finalizeEntry(
   const user = await requireUser();
 
   if (!id) return { ok: false, message: "Missing entry id." };
+
+  const parsed = entryFinalizeSchema.safeParse({ content, fontFamily: "" });
+  if (!parsed.success)
+    return {
+      ok: false,
+      message: parsed.error.issues[0]?.message ?? "Invalid entry.",
+    };
 
   try {
     const existing = await prisma.entry.findFirst({
@@ -121,7 +156,7 @@ export async function finalizeEntry(
     const entry = await prisma.entry.update({
       where: { id },
       data: {
-        content,
+        content: parsed.data.content,
         status: "FINAL",
         version: { increment: 1 },
       },

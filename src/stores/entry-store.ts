@@ -3,11 +3,13 @@ import { create } from "zustand";
 import { EntryDTO } from "../lib/entries/types";
 import { autosaveDraft, finalizeEntry } from "../lib/entries/server";
 import { sleep } from "../lib/utils/sleep";
+import {
+  EntryAutosaveValues,
+  entryAutosaveSchema,
+  entryFinalizeSchema,
+} from "../lib/validations/entries";
 
-export type Payload = {
-  content: string;
-  fontFamily: string;
-};
+export type Payload = EntryAutosaveValues;
 
 type EntryState = {
   saving: boolean;
@@ -78,6 +80,15 @@ export const useEntryStore = create<EntryState>((set, get) => ({
     const current = get().entry;
     if (current?.status === "FINAL") return;
 
+    const parsed = entryAutosaveSchema.safeParse(payload);
+    if (!parsed.success) {
+      set({
+        saving: false,
+        error: parsed.error.issues[0]?.message ?? "Invalid entry.",
+      });
+      return;
+    }
+
     const nextSeq = get().seq + 1;
 
     set({
@@ -89,8 +100,8 @@ export const useEntryStore = create<EntryState>((set, get) => ({
     try {
       const res = await autosaveDraft({
         id: get().entryId ?? undefined,
-        content: payload.content,
-        fontFamily: payload.fontFamily,
+        content: parsed.data.content,
+        fontFamily: parsed.data.fontFamily,
       });
 
       if (get().seq !== nextSeq) return;
@@ -126,6 +137,15 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       return;
     }
 
+    const parsed = entryFinalizeSchema.safeParse({ content, fontFamily });
+    if (!parsed.success) {
+      set({
+        finalSaving: false,
+        finalError: parsed.error.issues[0]?.message ?? "Invalid entry.",
+      });
+      return;
+    }
+
     const nextSeq = get().seq + 1;
 
     set({
@@ -142,8 +162,8 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       if (!id) {
         const created = await autosaveDraft({
           id: undefined,
-          content,
-          fontFamily,
+          content: parsed.data.content,
+          fontFamily: parsed.data.fontFamily,
         });
 
         if (get().seq !== nextSeq) return;
@@ -169,7 +189,7 @@ export const useEntryStore = create<EntryState>((set, get) => ({
         });
       }
 
-      const res = await finalizeEntry(id, content);
+      const res = await finalizeEntry(id, parsed.data.content);
 
       if (get().seq !== nextSeq) return;
 
