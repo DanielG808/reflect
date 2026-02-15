@@ -3,18 +3,7 @@
 import * as React from "react";
 import { cn } from "@/src/lib/utils/cn";
 import { useEntryStore } from "@/src/stores/entry-store";
-
-function minutesAgo(from: Date, to: Date) {
-  const diffMs = to.getTime() - from.getTime();
-  return Math.max(0, Math.floor(diffMs / 60_000));
-}
-
-function formatSavedLabel(lastSavedAt: Date, now: Date) {
-  const mins = minutesAgo(lastSavedAt, now);
-  if (mins === 0) return "just now";
-  if (mins === 1) return "1m";
-  return `${mins}m`;
-}
+import { formatSavedLabel } from "@/src/lib/utils/time";
 
 function Spinner({ className }: { className?: string }) {
   return (
