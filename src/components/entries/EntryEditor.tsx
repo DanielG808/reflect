@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { EditorContent } from "@tiptap/react";
 
 import { useLocalStorage } from "@/src/hooks/useLocalStorage";
@@ -11,6 +10,7 @@ import AutoSaveStatus from "./AutoSaveStatus";
 import EditorControls from "./EditorControls";
 import { Button } from "../ui/Button";
 import { useEntryStore } from "@/src/stores/entry-store";
+import { useEffect } from "react";
 
 const DEFAULT_FONT = "ui-sans-serif, system-ui, sans-serif";
 
@@ -33,11 +33,17 @@ export default function EntryEditor() {
   const markTyped = useEntryStore((s) => s.markTyped);
   const hasTyped = useEntryStore((s) => s.hasTyped);
 
+  const finalize = useEntryStore((s) => s.finalize);
+  const finalSaving = useEntryStore((s) => s.finalSaving);
+
+  const newEntry = useEntryStore((s) => s.newEntry);
+  const entry = useEntryStore((s) => s.entry);
+
   const debouncedAutosave = useDebounce(() => {
     autosave({ content, fontFamily });
   }, 800);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!editor) return;
 
     const onUpdate = () => {
@@ -52,10 +58,12 @@ export default function EntryEditor() {
     };
   }, [editor, debouncedAutosave, hasTyped, markTyped]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!hasTyped) return;
     debouncedAutosave();
   }, [fontFamily, debouncedAutosave, hasTyped]);
+
+  const isFinal = entry?.status === "FINAL";
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
@@ -72,7 +80,21 @@ export default function EntryEditor() {
         <EditorContent editor={editor} className="h-full" />
       </div>
 
-      <Button className="mt-4">Create New Entry</Button>
+      <Button
+        className="mt-4"
+        onClick={async () => {
+          await finalize(content, fontFamily);
+          const next = useEntryStore.getState().entry;
+          if (next?.status !== "FINAL") return;
+          newEntry();
+          setContent("");
+          editor?.commands.setContent("");
+          editor?.commands.focus("start");
+        }}
+        disabled={finalSaving || isFinal}
+      >
+        {finalSaving ? "Saving..." : "Create New Entry"}
+      </Button>
 
       <style jsx global>{`
         .tiptap {

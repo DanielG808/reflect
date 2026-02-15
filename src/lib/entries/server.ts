@@ -61,17 +61,18 @@ export async function updateEntry(
   if (!id) return { ok: false, message: "Missing entry id." };
 
   try {
-    const updated = await prisma.entry.updateMany({
+    const existing = await prisma.entry.findFirst({
       where: { id, userId: user.id },
-      data: { content },
+      select: { id: true },
     });
 
-    if (updated.count === 0) {
+    if (!existing) {
       return { ok: false, message: "Entry not found." };
     }
 
-    const entry = await prisma.entry.findFirst({
-      where: { id, userId: user.id },
+    const entry = await prisma.entry.update({
+      where: { id },
+      data: { content },
       select: {
         id: true,
         userId: true,
@@ -82,8 +83,6 @@ export async function updateEntry(
         updatedAt: true,
       },
     });
-
-    if (!entry) return { ok: false, message: "Entry not found." };
 
     return { ok: true, data: { entry: toEntryDTO(entry) } };
   } catch {
@@ -110,21 +109,22 @@ export async function finalizeEntry(
   if (!id) return { ok: false, message: "Missing entry id." };
 
   try {
-    const updated = await prisma.entry.updateMany({
+    const existing = await prisma.entry.findFirst({
       where: { id, userId: user.id },
+      select: { id: true },
+    });
+
+    if (!existing) {
+      return { ok: false, message: "Entry not found." };
+    }
+
+    const entry = await prisma.entry.update({
+      where: { id },
       data: {
         content,
         status: "FINAL",
         version: { increment: 1 },
       },
-    });
-
-    if (updated.count === 0) {
-      return { ok: false, message: "Entry not found." };
-    }
-
-    const entry = await prisma.entry.findFirst({
-      where: { id, userId: user.id },
       select: {
         id: true,
         userId: true,
@@ -135,8 +135,6 @@ export async function finalizeEntry(
         updatedAt: true,
       },
     });
-
-    if (!entry) return { ok: false, message: "Entry not found." };
 
     return { ok: true, data: { entry: toEntryDTO(entry) } };
   } catch {
