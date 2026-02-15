@@ -176,3 +176,55 @@ export async function finalizeEntry(
     return { ok: false, message: "Failed to finalize entry." };
   }
 }
+
+export async function getSavedEntries(): Promise<
+  EntryActionResult<{ entries: EntryDTO[] }>
+> {
+  const user = await requireUser();
+
+  try {
+    const entries = await prisma.entry.findMany({
+      where: { userId: user.id, status: "FINAL" },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        userId: true,
+        content: true,
+        status: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return { ok: true, data: { entries: entries.map(toEntryDTO) } };
+  } catch {
+    return { ok: false, message: "Failed to fetch saved entries." };
+  }
+}
+
+export async function getDraftEntries(): Promise<
+  EntryActionResult<{ entries: EntryDTO[] }>
+> {
+  const user = await requireUser();
+
+  try {
+    const entries = await prisma.entry.findMany({
+      where: { userId: user.id, status: "DRAFT" },
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        userId: true,
+        content: true,
+        status: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return { ok: true, data: { entries: entries.map(toEntryDTO) } };
+  } catch {
+    return { ok: false, message: "Failed to fetch draft entries." };
+  }
+}
