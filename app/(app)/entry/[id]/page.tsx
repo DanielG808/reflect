@@ -1,6 +1,8 @@
+import EntryViewer from "@/src/components/entries/journal/EntryViewer";
 import MainContainer from "@/src/components/layout/MainContainer";
 import H1 from "@/src/components/ui/H1";
 import { requireUser } from "@/src/lib/auth/server";
+import { formatEntryDate } from "@/src/lib/utils/time";
 import { prisma } from "@/src/server/db/prisma";
 import { notFound } from "next/navigation";
 
@@ -22,7 +24,12 @@ export default async function EntryPage({
       fullBleed
       className="h-full flex flex-col min-h-0 overflow-hidden"
     >
-      <H1 className="text-lg">Journal Entry ✧ date:</H1>
+      <H1 className="text-lg pb-10">
+        {user.email}&apos;s Journal Entry ✧{" "}
+        {formatEntryDate(entry.createdAt.toISOString())}:
+      </H1>
+
+      <EntryViewer content={entry.content} />
     </MainContainer>
   );
 }
