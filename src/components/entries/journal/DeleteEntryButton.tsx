@@ -2,6 +2,7 @@
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -25,13 +26,24 @@ export default function DeleteEntryButton({ entryId }: DeleteEntryButtonProps) {
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
-          <DialogDescription className=" ext-md pb-10 pt-2">
+
+          <DialogDescription className="text-md pb-6 pt-2">
             This action cannot be undone. This will{" "}
-            <span className="font-bold"> permanently delete </span>your journal
+            <span className="font-bold">permanently delete</span> your journal
             entry and remove your data from our servers.
           </DialogDescription>
-          <Button variant="warn">Delete Entry</Button>
-          <Button variant="ghost">Cancel</Button>
+
+          <div className="flex flex-col gap-2 pt-2">
+            <Button variant="warn" className="w-full">
+              Delete Entry
+            </Button>
+
+            <DialogClose asChild>
+              <Button variant="ghost" className="w-full">
+                Cancel
+              </Button>
+            </DialogClose>
+          </div>
         </DialogHeader>
       </DialogContent>
     </Dialog>
