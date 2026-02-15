@@ -3,6 +3,7 @@
 import { motion, type Variants } from "framer-motion";
 import { useLocalStorage } from "@/src/hooks/useLocalStorage";
 import Surface from "@/src/components/ui/Surface";
+import { SquarePenIcon, TrashIcon } from "lucide-react";
 
 type EntryViewerProps = {
   content: string;
@@ -44,13 +45,20 @@ export default function EntryViewer({ content }: EntryViewerProps) {
       animate="show"
       className="flex flex-col flex-1 min-h-0"
     >
-      <motion.div variants={item} className="flex flex-col flex-1 min-h-0">
-        <Surface className="flex flex-col flex-1 min-h-75 overflow-hidden">
+      <motion.div
+        variants={item}
+        className="flex flex-col flex-1 min-h-0 cursor-default"
+      >
+        <Surface className="flex flex-1 min-h-75 overflow-hidden">
           <div
             className="flex-1 overflow-auto p-4 whitespace-pre-wrap"
             style={{ fontFamily }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
+          <div className="flex p-4 space-x-4">
+            <SquarePenIcon className="h-5 w-5 hover:text-accent-dark cursor-pointer" />
+            <TrashIcon className="h-5 w-5 text-red-400/75 hover:text-red-500/75 cursor-pointer" />
+          </div>
         </Surface>
       </motion.div>
     </motion.div>
