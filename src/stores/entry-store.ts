@@ -2,7 +2,11 @@ import { create } from "zustand";
 import { toast } from "sonner";
 
 import { EntryDTO } from "../lib/entries/types";
-import { autosaveDraft, finalizeEntry } from "../lib/entries/server";
+import {
+  autosaveDraft,
+  finalizeEntry,
+  deleteEntry,
+} from "../lib/entries/server";
 import { sleep } from "../lib/utils/sleep";
 import {
   EntryAutosaveValues,
@@ -20,6 +24,8 @@ type EntryState = {
 
   finalSaving: boolean;
 
+  deleting: boolean;
+
   seq: number;
   hasTyped: boolean;
   entryId: string | null;
@@ -33,9 +39,11 @@ type EntryState = {
 
   autosave: (payload: Payload) => Promise<void>;
   finalize: (content: string, fontFamily?: string) => Promise<void>;
+  delete: (entryId: string, opts?: { onSuccess?: () => void }) => Promise<void>;
 };
 
 const FINALIZE_TOAST_ID = "entry-finalize";
+const DELETE_TOAST_ID = "entry-delete";
 
 export const useEntryStore = create<EntryState>((set, get) => ({
   saving: false,
@@ -43,6 +51,8 @@ export const useEntryStore = create<EntryState>((set, get) => ({
   error: null,
 
   finalSaving: false,
+
+  deleting: false,
 
   seq: 0,
   hasTyped: false,
@@ -64,6 +74,7 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       error: null,
 
       finalSaving: false,
+      deleting: false,
 
       seq: nextSeq,
       hasTyped: false,
@@ -242,6 +253,39 @@ export const useEntryStore = create<EntryState>((set, get) => ({
       );
 
       set({ finalSaving: false });
+    }
+  },
+
+  delete: async (entryId, opts) => {
+    if (get().deleting) return;
+
+    set({ deleting: true });
+    toast.loading("Deleting entry…", { id: DELETE_TOAST_ID });
+
+    try {
+      const res = await deleteEntry(entryId);
+
+      if (!res.ok) {
+        toast.error(res.message ?? "Failed to delete entry.", {
+          id: DELETE_TOAST_ID,
+        });
+        set({ deleting: false });
+        return;
+      }
+
+      toast.success("Entry deleted.", { id: DELETE_TOAST_ID });
+
+      if (get().entryId === entryId) {
+        get().newEntry();
+      }
+
+      opts?.onSuccess?.();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete entry.", {
+        id: DELETE_TOAST_ID,
+      });
+    } finally {
+      set({ deleting: false });
     }
   },
 }));

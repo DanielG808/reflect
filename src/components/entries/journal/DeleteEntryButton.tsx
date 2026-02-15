@@ -12,48 +12,27 @@ import {
 } from "@/components/ui/dialog";
 import { TrashIcon } from "lucide-react";
 import { Button } from "../../ui/Button";
-import { deleteEntry } from "@/src/lib/entries/server";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useEntryStore } from "@/src/stores/entry-store";
 
 type DeleteEntryButtonProps = {
   entryId: string;
 };
 
-const DELETE_TOAST_ID = "entry-delete";
-
 export default function DeleteEntryButton({ entryId }: DeleteEntryButtonProps) {
   const router = useRouter();
   const [open, setOpen] = React.useState(false);
-  const [deleting, setDeleting] = React.useState(false);
+
+  const deleting = useEntryStore((s) => s.deleting);
+  const deleteEntryAction = useEntryStore((s) => s.delete);
 
   async function onDelete() {
-    if (deleting) return;
-
-    setDeleting(true);
-    toast.loading("Deleting entry…", { id: DELETE_TOAST_ID });
-
-    try {
-      const res = await deleteEntry(entryId);
-
-      if (!res.ok) {
-        toast.error(res.message ?? "Failed to delete entry.", {
-          id: DELETE_TOAST_ID,
-        });
-        setDeleting(false);
-        return;
-      }
-
-      toast.success("Entry deleted.", { id: DELETE_TOAST_ID });
-      setOpen(false);
-      router.refresh();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to delete entry.", {
-        id: DELETE_TOAST_ID,
-      });
-    } finally {
-      setDeleting(false);
-    }
+    await deleteEntryAction(entryId, {
+      onSuccess: () => {
+        setOpen(false);
+        router.refresh();
+      },
+    });
   }
 
   return (
