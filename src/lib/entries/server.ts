@@ -9,6 +9,7 @@ function toEntryDTO(entry: {
   userId: string;
   content: string;
   status: "DRAFT" | "FINAL";
+  version: number;
   createdAt: Date;
   updatedAt: Date;
 }): EntryDTO {
@@ -17,6 +18,7 @@ function toEntryDTO(entry: {
     userId: entry.userId,
     content: entry.content,
     status: entry.status,
+    version: entry.version,
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
   };
@@ -38,6 +40,7 @@ export async function createEntry(
         userId: true,
         content: true,
         status: true,
+        version: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -74,6 +77,7 @@ export async function updateEntry(
         userId: true,
         content: true,
         status: true,
+        version: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -117,4 +121,47 @@ export async function autosaveDraft(
   }
 
   return createEntry(payload.content);
+}
+
+export async function finalizeEntry(
+  id: string,
+  content: string
+): Promise<EntryActionResult<{ entry: EntryDTO }>> {
+  const user = await requireUser();
+
+  if (!id) return { ok: false, message: "Missing entry id." };
+
+  try {
+    const updated = await prisma.entry.updateMany({
+      where: { id, userId: user.id },
+      data: {
+        content,
+        status: "FINAL",
+        version: { increment: 1 },
+      },
+    });
+
+    if (updated.count === 0) {
+      return { ok: false, message: "Entry not found." };
+    }
+
+    const entry = await prisma.entry.findFirst({
+      where: { id, userId: user.id },
+      select: {
+        id: true,
+        userId: true,
+        content: true,
+        status: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    if (!entry) return { ok: false, message: "Entry not found." };
+
+    return { ok: true, data: { entry: toEntryDTO(entry) } };
+  } catch {
+    return { ok: false, message: "Failed to finalize entry." };
+  }
 }
