@@ -12,7 +12,7 @@ export default function EntryCard({ username, entry }: EntryCardProps) {
   const formattedDate = formatEntryDate(entry.createdAt);
 
   return (
-    <li>
+    <li className="group">
       <Surface className="w-full h-22 px-3 py-2" hover>
         <div className="flex justify-between text-center">
           <h3 className="font-semibold">{`✧ ${username}'s entry · ${formattedDate}`}</h3>
