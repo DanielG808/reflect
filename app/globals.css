@@ -105,3 +105,16 @@
 
 /* Optional dark mode later:
 .dark { ... } */
+
+.tiptap {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
