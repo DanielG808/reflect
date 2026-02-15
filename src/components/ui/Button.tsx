@@ -13,7 +13,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<ButtonVariant, string> = {
   accent: `
-    bg-accent text-background
+    bg-accent text-white/90
     border border-white/20
     hover:bg-accent-dark hover:border-white/25
     focus-visible:ring-accent/30
@@ -31,7 +31,7 @@ const variantClasses: Record<ButtonVariant, string> = {
 `,
 
   warn: `
-    bg-warn/90 text-background
+    bg-warn/80 text-white/80
     border border-white/20
     hover:bg-warn hover:border-white/25
     focus-visible:ring-warn/25

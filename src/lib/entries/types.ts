@@ -11,6 +11,13 @@ export type EntryDTO = {
   userId: string;
   content: string;
   status: EntryStatus;
+  version: number;
   createdAt: string;
   updatedAt: string;
+};
+
+export type AutosavePayload = {
+  id?: string | null;
+  content: string;
+  fontFamily: string;
 };

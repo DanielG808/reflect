@@ -1,12 +1,17 @@
+"use client";
+
+import type { Editor } from "@tiptap/react";
 import FontSelector from "./FontSelector";
 import TextFormatSelector from "./TextFormatSelector";
 
 type EditorControlsProps = {
+  editor: Editor | null;
   font: string;
   onFontChange: (font: string) => void;
 };
 
 export default function EditorControls({
+  editor,
   font,
   onFontChange,
 }: EditorControlsProps) {
@@ -24,7 +29,7 @@ export default function EditorControls({
       "
     >
       <FontSelector value={font} onChange={onFontChange} />
-      <TextFormatSelector />
+      <TextFormatSelector editor={editor} />
     </nav>
   );
 }
