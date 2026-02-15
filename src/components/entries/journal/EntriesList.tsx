@@ -1,8 +1,12 @@
 import { getSavedEntries } from "@/src/lib/entries/server";
 import EntryCard from "./EntryCard";
+import { getMyUsername } from "@/src/lib/auth/server";
 
 export default async function EntriesList() {
-  const res = await getSavedEntries();
+  const [res, username] = await Promise.all([
+    getSavedEntries(),
+    getMyUsername(),
+  ]);
 
   if (!res.ok) {
     return (
@@ -26,10 +30,12 @@ export default async function EntriesList() {
     );
   }
 
+  const safeUsername = username ?? "You";
+
   return (
     <ul className="flex flex-col items-stretch w-3/4 space-y-4 mx-auto pt-10">
       {entries.map((entry) => (
-        <EntryCard key={entry.id} entry={entry} />
+        <EntryCard key={entry.id} username={safeUsername} entry={entry} />
       ))}
     </ul>
   );
