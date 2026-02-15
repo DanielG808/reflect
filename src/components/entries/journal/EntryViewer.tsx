@@ -50,13 +50,13 @@ export default function EntryViewer({ entry }: EntryViewerProps) {
         variants={item}
         className="flex flex-col flex-1 min-h-0 cursor-default"
       >
-        <Surface className="flex flex-1 min-h-75 overflow-hidden">
+        <Surface className="group flex flex-1 min-h-75 overflow-hidden">
           <div
             className="flex-1 overflow-auto p-4 whitespace-pre-wrap"
             style={{ fontFamily }}
             dangerouslySetInnerHTML={{ __html: entry.content }}
           />
-          <div className="flex p-4 space-x-4">
+          <div className="flex p-4 space-x-4 opacity-0 group-hover:opacity-100 duration-200">
             <SquarePenIcon className="h-5 w-5 hover:text-accent-dark cursor-pointer" />
             <TrashIcon className="h-5 w-5 text-red-400/75 hover:text-red-500/75 cursor-pointer" />
           </div>
