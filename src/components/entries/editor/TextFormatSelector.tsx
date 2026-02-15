@@ -5,8 +5,8 @@ import * as React from "react";
 import type { Editor } from "@tiptap/react";
 import { BoldIcon, ItalicIcon, StrikethroughIcon } from "lucide-react";
 
-import { Button } from "../ui/Button";
 import { cn } from "@/src/lib/utils/cn";
+import { Button } from "../../ui/Button";
 
 const formatOpts = [
   { id: "bold", icon: BoldIcon },

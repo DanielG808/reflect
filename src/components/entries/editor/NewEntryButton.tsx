@@ -1,8 +1,9 @@
 "use client";
 
 import type { Editor } from "@tiptap/react";
-import { Button } from "../ui/Button";
+
 import { useEntryStore } from "@/src/stores/entry-store";
+import { Button } from "../../ui/Button";
 
 type NewEntryButtonProps = {
   editor: Editor | null;

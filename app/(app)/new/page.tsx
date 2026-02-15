@@ -1,4 +1,4 @@
-import EntryEditor from "@/src/components/entries/EntryEditor";
+import EntryEditor from "@/src/components/entries/editor/EntryEditor";
 import MainContainer from "@/src/components/layout/MainContainer";
 import Surface from "@/src/components/ui/Surface";
 

@@ -1,4 +1,3 @@
-// src/components/editor/EditorControls.tsx
 "use client";
 
 import type { Editor } from "@tiptap/react";
