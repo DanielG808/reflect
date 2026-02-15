@@ -2,12 +2,12 @@ import { create } from "zustand";
 import { autosaveDraft } from "../lib/entries/server";
 import { EntryDTO } from "../lib/entries/types";
 
-export type AutosavePayload = {
+export type Payload = {
   content: string;
   fontFamily: string;
 };
 
-type EntryAutosaveState = {
+type EntryState = {
   saving: boolean;
   lastSavedAt: Date | null;
   error: string | null;
@@ -18,10 +18,10 @@ type EntryAutosaveState = {
   markTyped: () => void;
   clearError: () => void;
   setEntryId: (id: string | null) => void;
-  autosave: (payload: AutosavePayload) => Promise<void>;
+  autosave: (payload: Payload) => Promise<void>;
 };
 
-export const useEntryAutosaveStore = create<EntryAutosaveState>((set, get) => ({
+export const useEntryStore = create<EntryState>((set, get) => ({
   saving: false,
   lastSavedAt: null,
   error: null,

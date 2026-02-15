@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/src/lib/utils/cn";
-import { useEntryAutosaveStore } from "@/src/stores/entry-autosave-store";
+import { useEntryStore } from "@/src/stores/entry-store";
 
 function minutesAgo(from: Date, to: Date) {
   const diffMs = to.getTime() - from.getTime();
@@ -61,10 +61,10 @@ function CheckIcon({ className }: { className?: string }) {
 }
 
 export default function AutoSaveStatus({ className }: { className?: string }) {
-  const saving = useEntryAutosaveStore((s) => s.saving);
-  const lastSavedAt = useEntryAutosaveStore((s) => s.lastSavedAt);
-  const error = useEntryAutosaveStore((s) => s.error);
-  const hasTyped = useEntryAutosaveStore((s) => s.hasTyped);
+  const saving = useEntryStore((s) => s.saving);
+  const lastSavedAt = useEntryStore((s) => s.lastSavedAt);
+  const error = useEntryStore((s) => s.error);
+  const hasTyped = useEntryStore((s) => s.hasTyped);
 
   const [now, setNow] = React.useState<Date | null>(null);
 

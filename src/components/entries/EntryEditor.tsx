@@ -6,11 +6,11 @@ import { EditorContent } from "@tiptap/react";
 import { useLocalStorage } from "@/src/hooks/useLocalStorage";
 import { useEntryEditor } from "@/src/hooks/useEntryEditor";
 import { useDebounce } from "@/src/hooks/useDebounce";
-import { useEntryAutosaveStore } from "@/src/stores/entry-autosave-store";
 
 import AutoSaveStatus from "./AutoSaveStatus";
 import EditorControls from "./EditorControls";
 import { Button } from "../ui/Button";
+import { useEntryStore } from "@/src/stores/entry-store";
 
 const DEFAULT_FONT = "ui-sans-serif, system-ui, sans-serif";
 
@@ -29,9 +29,9 @@ export default function EntryEditor() {
     placeholder: "What's on your mind?",
   });
 
-  const autosave = useEntryAutosaveStore((s) => s.autosave);
-  const markTyped = useEntryAutosaveStore((s) => s.markTyped);
-  const hasTyped = useEntryAutosaveStore((s) => s.hasTyped);
+  const autosave = useEntryStore((s) => s.autosave);
+  const markTyped = useEntryStore((s) => s.markTyped);
+  const hasTyped = useEntryStore((s) => s.hasTyped);
 
   const debouncedAutosave = useDebounce(() => {
     autosave({ content, fontFamily });

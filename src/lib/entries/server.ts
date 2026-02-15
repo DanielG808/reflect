@@ -91,28 +91,6 @@ export async function updateEntry(
   }
 }
 
-export async function deleteEntry(
-  id: string
-): Promise<EntryActionResult<{ id: string }>> {
-  const user = await requireUser();
-
-  if (!id) return { ok: false, message: "Missing entry id." };
-
-  try {
-    const deleted = await prisma.entry.deleteMany({
-      where: { id, userId: user.id },
-    });
-
-    if (deleted.count === 0) {
-      return { ok: false, message: "Entry not found." };
-    }
-
-    return { ok: true, data: { id } };
-  } catch {
-    return { ok: false, message: "Failed to delete entry." };
-  }
-}
-
 export async function autosaveDraft(
   payload: AutosavePayload
 ): Promise<EntryActionResult<{ entry: EntryDTO }>> {
